@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
-
-const userSchema = new mongoose.Schema(
+import bcrypt from 'bcryptjs';
+const userSchema = new Schema(
   {
-    username: {
+    userName: {
       type: String,
       required: true,
       unique: true,
@@ -58,6 +58,14 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-const User = model('User', userSchema);
 
+// ?Hash password using bcrypt and mongoose pre hook
+userSchema.pre('save',async function(next){
+  const salt=await bcrypt.genSalt(10);
+  const hash=await bcrypt.hash(this.password,salt);
+  this.password=hash;
+  next();
+})
+
+const User = model('User', userSchema);
 export default User;
