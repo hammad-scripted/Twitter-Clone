@@ -12,3 +12,14 @@ export const generateTokenAndSetCookie = (userId, res) => {
     secure: process.env.NODE_ENV === 'production',
   });
 };
+
+export const verifyToken=(req,res,next)=>{
+
+    try{
+        
+
+    }
+    catch(error){
+        console.log(error);
+    }
+}

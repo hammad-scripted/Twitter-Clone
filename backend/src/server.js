@@ -12,12 +12,11 @@ import morgan from 'morgan';
 import cors from 'cors';
 import errorHandler from './errors/errorHandler.js';
 import notFound from './errors/notFound.js';
-
-
-
+import cookieParser from 'cookie-parser';
 
 // ? MIDDLEWARES
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); //? to parse form data
 app.use(morgan('dev'));
 app.use(
   cors({
@@ -25,13 +24,12 @@ app.use(
     credentials: true,
   }),
 );
+app.use(cookieParser());
 
 //? ROUTES
-app.use('/api/auth', authRouter); 
+app.use('/api/auth', authRouter);
 app.use(notFound);
 app.use(errorHandler);
-
-
 
 //? START SERVER
 const startServer = async () => {
