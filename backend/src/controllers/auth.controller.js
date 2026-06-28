@@ -24,13 +24,14 @@ export const login = async (req, res, next) => {
 
   return res
     .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK, 'login successfully', user));
+    .json(new ApiResponse(StatusCodes.OK, user,'Logged in successfully'));
 };
 
 export const logout = async (req, res, next) => {
-  res.json({
-    message: 'signup',
-  });
+  res.clearCookie('jwt');
+  return res
+    .status(StatusCodes.OK)
+    .json(new ApiResponse(StatusCodes.OK, null,'Logged out successfully'));
 };
 
 export const signup = async (req, res, next) => {
@@ -65,4 +66,12 @@ export const signup = async (req, res, next) => {
         newUser,
       ),
     );
+};
+
+export const getMe = async (req, res, next) => {
+  const userId = req.user._id;
+  const currentUser = await User.findById(userId).select('-password');
+  return res
+    .status(StatusCodes.OK)
+    .json(new ApiResponse(StatusCodes.OK,currentUser,'User found successfully'));
 };

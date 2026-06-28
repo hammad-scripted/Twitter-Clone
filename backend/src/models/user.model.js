@@ -58,15 +58,13 @@ const userSchema = new Schema(
   },
 );
 
-
 // ?Hash password using bcrypt and mongoose pre hook
-userSchema.pre('save',async function(){
-  if(!this.isModified('password')) return;
-  const salt=await bcrypt.genSalt(10);
-  const hash=await bcrypt.hash(this.password,salt);
-  this.password=hash;
-
-})
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(this.password, salt);
+  this.password = hash;
+});
 
 const User = model('User', userSchema);
 export default User;
