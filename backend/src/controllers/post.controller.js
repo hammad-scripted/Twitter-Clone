@@ -62,10 +62,9 @@ export const deletePost = async (req, res, next) => {
     return next(new ApiError(StatusCodes.NOT_FOUND, 'Post not found'));
   }
 
-  if (id !== req.user._id.toString()) {
+  if (req.user._id.toString() !== post.user.toString()) {
     return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized'));
   }
-
   if (post.ImgId) {
     await cloudinary.uploader.destroy(post.ImgId);
   }
@@ -75,4 +74,25 @@ export const deletePost = async (req, res, next) => {
   return res
     .status(StatusCodes.OK)
     .json(new ApiResponse(StatusCodes.OK, 'Post deleted successfully'));
+};
+
+export const commentOnPost = async (req, res, next) => {
+  const { postId } = req.params;
+  const userId = req.user._id;
+  const {text } = req.body || {};
+
+  if (!text) {
+    return next(
+      new ApiError(StatusCodes.BAD_REQUEST, 'Comment cannot be empty'),
+    );
+  }
+  const post = await Post.findById(postId);
+  if (!post) {
+    return next(new ApiError(StatusCodes.NOT_FOUND, 'Post not found'));
+  }
+  post.comments.push({ user: userId, text });
+  await post.save();
+  return res
+    .status(StatusCodes.OK)
+    .json(new ApiResponse(StatusCodes.OK, post, 'Comment added successfully'));
 };
