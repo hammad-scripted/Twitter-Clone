@@ -8,7 +8,7 @@ import {
 import { protect } from '../middlewares/protect.js';
 const router = Router();
 
-router.get('/getMe', protect, getMe);
+router.get('/me', protect, getMe);
 router.post('/login', login);
 router.post('/logout', logout);
 router.post('/signup', userValidationRules(), validate, signup);
