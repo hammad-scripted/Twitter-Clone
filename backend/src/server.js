@@ -7,6 +7,7 @@ import dns from 'node:dns/promises';
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 import { connectDB } from './db/connect.js';
 import authRouter from './routes/auth.routes.js';
+import userRouter from './routes/user.routes.js';
 import chalk from 'chalk';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -28,6 +29,7 @@ app.use(cookieParser());
 
 //? ROUTES
 app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 app.use(notFound);
 app.use(errorHandler);
 

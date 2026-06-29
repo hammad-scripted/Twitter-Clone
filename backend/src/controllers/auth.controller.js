@@ -24,14 +24,14 @@ export const login = async (req, res, next) => {
 
   return res
     .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK, user,'Logged in successfully'));
+    .json(new ApiResponse(StatusCodes.OK, user, 'Logged in successfully'));
 };
 
 export const logout = async (req, res, next) => {
   res.clearCookie('jwt');
   return res
     .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK, null,'Logged out successfully'));
+    .json(new ApiResponse(StatusCodes.OK, null, 'Logged out successfully'));
 };
 
 export const signup = async (req, res, next) => {
@@ -62,8 +62,8 @@ export const signup = async (req, res, next) => {
     .json(
       new ApiResponse(
         StatusCodes.CREATED,
-        'User created successfully',
         newUser,
+        'User created successfully',
       ),
     );
 };
@@ -73,5 +73,7 @@ export const getMe = async (req, res, next) => {
   const currentUser = await User.findById(userId).select('-password');
   return res
     .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK,currentUser,'User found successfully'));
+    .json(
+      new ApiResponse(StatusCodes.OK, currentUser, 'User found successfully'),
+    );
 };
