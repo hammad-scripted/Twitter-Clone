@@ -105,37 +105,57 @@ export const likeUnlikePost = async (req, res, next) => {
   const post = await Post.findById(postId);
 
   if (!post) {
-    return next(
-      new ApiError(StatusCodes.NOT_FOUND, 'Post not found')
-    );
+    return next(new ApiError(StatusCodes.NOT_FOUND, 'Post not found'));
   }
 
-  const isLiked = post.likes.some(
-    (id) => id.toString() === userId.toString()
-  );
+  const isLiked = post.likes.some((id) => id.toString() === userId.toString());
 
   if (isLiked) {
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
       { $pull: { likes: userId } },
-      { new: true }
+      { new: true },
     );
 
-    return res.status(StatusCodes.OK).json(
-      new ApiResponse(
-        StatusCodes.OK,
-        updatedPost,
-        'Post unliked successfully'
-      )
+    // ? send notification if post is unliked by another user
+    if (post.user.toString() !== userId.toString()) {
+      await Notification.create({
+        from: userId,
+        to: post.user,
+        type: 'unlike',
+      });
+    }
+    // ? remove post from user's liked posts
+    await User.findByIdAndUpdate(
+      userId,
+      { $pull: { likedPosts: postId } },
+      { new: true },
     );
+
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          updatedPost,
+          'Post unliked successfully',
+        ),
+      );
   }
 
   const updatedPost = await Post.findByIdAndUpdate(
     postId,
     { $push: { likes: userId } },
-    { new: true }
+    { new: true },
   );
 
+  //   ? add post to user's liked posts
+  await User.findByIdAndUpdate(
+    userId,
+    { $push: { likedPosts: postId } },
+    { new: true },
+  );
+  //? send notification if post is liked by another user
   if (post.user.toString() !== userId.toString()) {
     await Notification.create({
       from: userId,
@@ -144,11 +164,94 @@ export const likeUnlikePost = async (req, res, next) => {
     });
   }
 
+  return res
+    .status(StatusCodes.OK)
+    .json(
+      new ApiResponse(StatusCodes.OK, updatedPost, 'Post liked successfully'),
+    );
+};
+
+export const getAllPosts = async (req, res, next) => {
+  const posts = await Post.find()
+    .sort('-createdAt')
+    .populate({
+      path: 'user',
+      select: '-password',
+    })
+    .populate({
+      path: 'likes',
+    })
+    .populate({
+      path: 'comments.user',
+      select: '-password',
+    });
+
+  if (posts.length === 0) {
+    return next(new ApiError(StatusCodes.NOT_FOUND, 'No posts found'));
+  }
+  return res
+    .status(StatusCodes.OK)
+    .json(new ApiResponse(StatusCodes.OK, posts, 'Posts found successfully'));
+};
+
+export const getLikedPosts = async (req, res, next) => {
+  const { id: userId } = req.params;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return next(
+      new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+    );
+  }
+
+  const posts = await Post.find({
+    likes: userId,
+  })
+    .sort({ createdAt: -1 })
+    .populate({
+      path: 'user',
+      select: '-password',
+    })
+    .populate({
+      path: 'comments.user',
+      select: '-password',
+    });
+
   return res.status(StatusCodes.OK).json(
     new ApiResponse(
       StatusCodes.OK,
-      updatedPost,
-      'Post liked successfully'
+      posts,
+      'Liked posts fetched successfully'
     )
   );
 };
+
+
+
+export const getFollowingPosts=async(req,res,next)=>{
+
+const userId=req.user._id;
+
+const user=await User.findById(userId);
+
+if(!user){
+  return next(new ApiError(StatusCodes.NOT_FOUND,'User not found'));
+}
+
+
+const posts=await Post.find({user:{$in:user.following}})
+.sort('-createdAt')
+.populate({
+  path:'user',
+  select:'-password'
+})
+.populate({
+  path:'comments.user',
+  select:'-password'
+})
+
+return res.status(StatusCodes.OK).json(new ApiResponse(StatusCodes.OK,posts,'Following posts fetched successfully'));   
+
+
+}
