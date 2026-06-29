@@ -1,47 +1,79 @@
 import express from 'express';
 import { config } from 'dotenv';
-config();
-const app = express();
-const PORT = process.env.PORT || 8000;
 import dns from 'node:dns/promises';
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+import os from 'os';
+
+import morgan from 'morgan';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import fileUpload from 'express-fileupload';
+import chalk from 'chalk';
+
 import { connectDB } from './db/connect.js';
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
-import chalk from 'chalk';
-import morgan from 'morgan';
-import cors from 'cors';
+
 import errorHandler from './errors/errorHandler.js';
 import notFound from './errors/notFound.js';
-import cookieParser from 'cookie-parser';
 
-// ? MIDDLEWARES
+config();
+
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// Body Parser
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); //? to parse form data
+app.use(express.urlencoded({ extended: true }));
+
+// Logger
 app.use(morgan('dev'));
+
+// CORS
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     credentials: true,
-  }),
+  })
 );
+
+// Cookies
 app.use(cookieParser());
 
-//? ROUTES
+// File Upload
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: os.tmpdir(),
+    createParentPath: true,
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB
+    },
+    abortOnLimit: true,
+    responseOnLimit: 'Image size should be less than 5MB',
+  })
+);
+
+// Routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+
+// Error Handling
 app.use(notFound);
 app.use(errorHandler);
 
-//? START SERVER
 const startServer = async () => {
   try {
     await connectDB();
+
     app.listen(PORT, () => {
-      console.log(chalk.yellow(`Server is running on port ${PORT}...`));
+      console.log(
+        chalk.green(`🚀 Server running on http://localhost:${PORT}`)
+      );
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

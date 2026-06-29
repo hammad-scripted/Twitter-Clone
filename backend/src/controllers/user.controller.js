@@ -3,6 +3,11 @@ import ApiResponse from '../utils/apiResponse.js';
 import { StatusCodes } from 'http-status-codes';
 import User from '../models/user.model.js';
 import Notification from '../models/notification.model.js';
+import { verifyPassword } from '../utils/verifyPassword.js';
+import bcrypt from 'bcryptjs';
+import cloudinary from '../utils/cloudinary.js';
+import { deleteImage } from '../utils/cloudinary.js';
+import {uploadImage} from '../utils/cloudinary.js';
 export const getUserProfile = async (req, res, next) => {
   const { userName } = req.params;
 
@@ -94,22 +99,157 @@ export const followUnfollowUser = async (req, res, next) => {
 };
 
 export const updateUserProfile = async (req, res, next) => {
-  const userId = req.user._id;
-  if (!userId) {
+  console.log(req.headers['content-type']);
+  console.log(req.body);
+  console.log(req.files);
+  try {
+    const {
+      fullName,
+      email,
+      userName,
+      bio,
+      link,
+      currentPassword,
+      newPassword,
+    } = req.body || {};
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return next(new ApiError(StatusCodes.NOT_FOUND, 'User not found'));
+    }
+
+    // =====================
+    // PASSWORD UPDATE
+    // =====================
+
+    if (
+      (currentPassword && !newPassword) ||
+      (!currentPassword && newPassword)
+    ) {
+      return next(
+        new ApiError(
+          StatusCodes.BAD_REQUEST,
+          'Please provide both current password and new password',
+        ),
+      );
+    }
+
+    if (currentPassword && newPassword) {
+      const isMatch = await verifyPassword(currentPassword, user.password);
+
+      if (!isMatch) {
+        return next(
+          new ApiError(
+            StatusCodes.UNAUTHORIZED,
+            'Current password is incorrect',
+          ),
+        );
+      }
+
+      if (newPassword.length < 6) {
+        return next(
+          new ApiError(
+            StatusCodes.BAD_REQUEST,
+            'Password must be at least 6 characters',
+          ),
+        );
+      }
+
+      user.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    // =====================
+    // PROFILE IMAGE
+    // =====================
+
+    if (req.files?.profileImg) {
+      await deleteImage(user.profileImgId);
+
+      const image = await uploadImage(
+        req.files.profileImg,
+        'twitter-clone/profile',
+      );
+
+      user.profileImg = image.secure_url;
+      user.profileImgId = image.public_id;
+    }
+
+    // =====================
+    // COVER IMAGE
+    // =====================
+
+    if (req.files?.coverImg) {
+      await deleteImage(user.coverImgId);
+
+      const image = await uploadImage(
+        req.files.coverImg,
+        'twitter-clone/cover',
+      );
+
+      user.coverImg = image.secure_url;
+      user.coverImgId = image.public_id;
+    }
+
+    // =====================
+    // UPDATE USER DETAILS
+    // =====================
+
+    user.fullName = fullName ?? user.fullName;
+    user.email = email ?? user.email;
+    user.userName = userName ?? user.userName;
+    user.bio = bio ?? user.bio;
+    user.link = link ?? user.link;
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select('-password');
+
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          updatedUser,
+          'Profile updated successfully',
+        ),
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+export const getSuggestedUsers = async (req, res, next) => {
+  const currentUser = await User.findById(req.user._id);
+
+  if (!currentUser) {
     return next(new ApiError(StatusCodes.NOT_FOUND, 'User not found'));
   }
-  const user = await User.findByIdAndUpdate(userId, req.body, { new: true }).select('-password');
+
+  const users = await User.aggregate([
+    {
+      $match: {
+        _id: {
+          $nin: [currentUser._id, ...currentUser.following],
+        },
+      },
+    },
+    {
+      $sample: { size: 10 },
+    },
+    {
+      $project: {
+        password: 0,
+      },
+    },
+  ]);
 
   return res
     .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK, user, 'User updated successfully'));
-};
-
-export const getSuggestedUsers = async (req, res, next) => {
-  const userId = req.user._id;
-
-  const users = await User.find({ _id: { $ne: userId } }).limit(10);
-  return res
-    .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK, users, 'Users found successfully'));
+    .json(
+      new ApiResponse(
+        StatusCodes.OK,
+        users,
+        'Suggested users fetched successfully',
+      ),
+    );
 };

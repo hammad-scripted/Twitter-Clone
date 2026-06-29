@@ -43,6 +43,14 @@ const userSchema = new Schema(
       type: String,
       default: 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
     },
+    profileImgId: {
+      type: String,
+      default: '',
+    },
+    coverImgId: {
+      type: String,
+      default: '',
+    },
     bio: {
       type: String,
       default: '',
