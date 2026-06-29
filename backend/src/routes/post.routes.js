@@ -9,12 +9,13 @@ import {
   likeUnlikePost,
   getAllPosts,
   getLikedPosts,
-  getFollowingPosts
+  getFollowingPosts,getUserPosts
 } from '../controllers/post.controller.js';
 const router = Router();
 
 router.get('/all', protect,getAllPosts)
 router.get("/following",protect,getFollowingPosts)
+router.get("/user/:userName",protect,getUserPosts)  
 router.get("/liked/:id",protect,getLikedPosts)
 router.post('/create', protect, createPost);
 router.delete('/delete/:id', protect, deletePost);

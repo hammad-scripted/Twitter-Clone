@@ -42,5 +42,11 @@ const postSchema = new Schema(
     timestamps: true,
   },
 );
+
+postSchema.index({ user: 1 });
+
+postSchema.index({ createdAt: -1 });
+
+postSchema.index({ likes: 1 });
 const Post = model('Post', postSchema);
 export default Post;
