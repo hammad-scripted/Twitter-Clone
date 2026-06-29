@@ -12,7 +12,7 @@ import chalk from 'chalk';
 import { connectDB } from './db/connect.js';
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
-
+import postRouter from './routes/post.routes.js'
 import errorHandler from './errors/errorHandler.js';
 import notFound from './errors/notFound.js';
 
@@ -58,6 +58,7 @@ app.use(
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/posts', postRouter)
 
 // Error Handling
 app.use(notFound);
