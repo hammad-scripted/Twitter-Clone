@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-// import Posts from "../../components/common/Posts";
-// import CreatePost from "./CreatePost";
+import Posts from "../../components/common/Posts";
+import CreatePost from "./CreatePost";
+
 
 const HomePage = () => {
 	const [feedType, setFeedType] = useState("forYou");
@@ -34,21 +35,10 @@ const HomePage = () => {
 				</div>
 
 				{/*  CREATE POST INPUT */}
-				<div className='border-b border-gray-700 p-4'>
-					<textarea
-						className='textarea textarea-bordered w-full resize-none rounded bg-base-200 text-base'
-						placeholder='What is happening?!'
-						rows='3'
-					/>
-					<div className='mt-3 flex justify-end'>
-						<button className='btn btn-primary btn-sm rounded-full px-5 text-white'>Post</button>
-					</div>
-				</div>
+				<CreatePost />
 
 				{/* POSTS */}
-				<div className='p-6 text-center text-gray-400'>
-					No posts yet. Your feed will appear here.
-				</div>
+				<Posts />
 			</div>
 		</>
 	);
