@@ -6,48 +6,51 @@ import NotificationPage from './pages/notification/NotificationPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import Sidebar from './components/common/Sidebar';
 import RightPanel from './components/common/RightPanel';
-
+import { Toaster } from 'react-hot-toast';
 const AppLayout = ({ children }) => {
-	return (
-		<div className='flex max-w-6xl mx-auto'>
-			<Sidebar />
-			{children}
-			<RightPanel />
-		</div>
-	);
+  return (
+    <div className="flex max-w-6xl mx-auto">
+      <Sidebar />
+      {children}
+      <RightPanel />
+    </div>
+  );
 };
 
 function App() {
-	return (
-		<Routes>
-			<Route
-				path='/'
-				element={
-					<AppLayout>
-						<HomePage />
-					</AppLayout>
-				}
-			/>
-			<Route
-				path='/notifications'
-				element={
-					<AppLayout>
-						<NotificationPage />
-					</AppLayout>
-				}
-			/>
-			<Route
-				path='/profile/:username'
-				element={
-					<AppLayout>
-						<ProfilePage />
-					</AppLayout>
-				}
-			/>
-			<Route path='/signup' element={<SignUpPage />} />
-			<Route path='/login' element={<LoginPage />} />
-		</Routes>
-	);
+  return (
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <AppLayout>
+              <HomePage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <AppLayout>
+              <NotificationPage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/profile/:username"
+          element={
+            <AppLayout>
+              <ProfilePage />
+            </AppLayout>
+          }
+        />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+      <Toaster position="bottom-center" />
+    </>
+  );
 }
 
 export default App;
