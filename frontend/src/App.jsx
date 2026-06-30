@@ -1,7 +1,18 @@
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/home/HomePage';
+import LoginPage from './pages/auth/login/LoginPage';
+import SignUpPage from './pages/auth/signup/SignUpPage';
 
-
-export const App = () => {
-  return (
-    <div className="text-amber-300 text-3xl bg-amber-950"> Hello World!!</div>
-  )
+function App() {
+	return (
+		<div className='flex max-w-6xl mx-auto'>
+			<Routes>
+				<Route path='/' element={<HomePage />} />
+				<Route path='/signup' element={<SignUpPage />} />
+				<Route path='/login' element={<LoginPage />} />
+			</Routes>
+		</div>
+	);
 }
+
+export default App;
