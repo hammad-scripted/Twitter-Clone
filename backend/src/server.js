@@ -12,7 +12,8 @@ import chalk from 'chalk';
 import { connectDB } from './db/connect.js';
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
-import postRouter from './routes/post.routes.js'
+import postRouter from './routes/post.routes.js';
+import notificationRouter from './routes/notification.routes.js';
 import errorHandler from './errors/errorHandler.js';
 import notFound from './errors/notFound.js';
 
@@ -35,7 +36,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
-  })
+  }),
 );
 
 // Cookies
@@ -52,13 +53,14 @@ app.use(
     },
     abortOnLimit: true,
     responseOnLimit: 'Image size should be less than 5MB',
-  })
+  }),
 );
 
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
-app.use('/api/posts', postRouter)
+app.use('/api/posts', postRouter);
+app.use('/api/notifications', notificationRouter);
 
 // Error Handling
 app.use(notFound);
@@ -69,9 +71,7 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(
-        chalk.green(`🚀 Server running on http://localhost:${PORT}`)
-      );
+      console.log(chalk.green(`🚀 Server running on http://localhost:${PORT}`));
     });
   } catch (error) {
     console.error(error);
