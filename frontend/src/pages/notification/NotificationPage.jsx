@@ -77,7 +77,7 @@ const NotificationPage = () => {
                 <Link to={`/profile/${senderUsername}`} className="flex gap-2 items-center">
                   <div className="avatar">
                     <div className="w-8 rounded-full">
-                      <img src={getImageUrl(notification.from?.profileImg, imageVersion)} />
+                      <img src={getImageUrl(senderUser?.profileImg, imageVersion)} />
                     </div>
                   </div>
                   <div className="flex gap-1">

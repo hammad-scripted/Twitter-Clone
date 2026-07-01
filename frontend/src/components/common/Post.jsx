@@ -34,11 +34,6 @@ const Post = ({ post }) => {
     queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
     staleTime: Infinity,
   });
-  const { data: latestProfile } = useQuery({
-    queryKey: ['latestProfile'],
-    queryFn: () => queryClient.getQueryData(['latestProfile']) || null,
-    staleTime: Infinity,
-  });
   const postOwner = post.user;
   const isLiked = post.likes?.some((id) => id === authUser?._id);
   const isMyPost = authUser?._id === postOwner?._id;
@@ -92,7 +87,7 @@ const Post = ({ post }) => {
           to={`/profile/${postOwner.username}`}
           className="w-8 rounded-full overflow-hidden"
         >
-          <img src={getImageUrl(latestProfile?.profileImg || postOwner.profileImg, imageVersion)} />
+          <img src={getImageUrl(postOwner?.profileImg, imageVersion)} />
         </Link>
       </div>
       <div className="flex flex-col flex-1">
@@ -157,7 +152,7 @@ const Post = ({ post }) => {
                       <div className="avatar">
                         <div className="w-8 rounded-full">
                           <img
-                            src={getImageUrl(comment.user.profileImg, imageVersion)}
+                            src={getImageUrl(comment.user?.profileImg, imageVersion)}
                           />
                         </div>
                       </div>

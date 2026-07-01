@@ -12,11 +12,6 @@ const RightPanel = ({ isLoading = false }) => {
     queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
     staleTime: Infinity,
   });
-  const { data: latestProfile } = useQuery({
-    queryKey: ['latestProfile'],
-    queryFn: () => queryClient.getQueryData(['latestProfile']) || null,
-    staleTime: Infinity,
-  });
 
   const { data: users = [], isLoading: isUsersLoading } = useQuery({
     queryKey: ['suggestedUsers'],
@@ -52,7 +47,7 @@ const RightPanel = ({ isLoading = false }) => {
                 <Link to={`/profile/${user.username}`} className="flex gap-2 items-center flex-1">
                   <div className="avatar">
                     <div className="w-8 rounded-full">
-                      <img src={getImageUrl(latestProfile?.profileImg || user.profileImg, imageVersion)} />
+                      <img src={getImageUrl(user?.profileImg, imageVersion)} />
                     </div>
                   </div>
                   <div className="flex flex-col">

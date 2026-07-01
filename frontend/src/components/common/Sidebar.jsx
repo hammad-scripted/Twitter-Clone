@@ -16,11 +16,6 @@ const Sidebar = () => {
     queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
     staleTime: Infinity,
   });
-  const { data: latestProfile } = useQuery({
-    queryKey: ['latestProfile'],
-    queryFn: () => queryClient.getQueryData(['latestProfile']) || data,
-    staleTime: Infinity,
-  });
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
@@ -79,7 +74,7 @@ const Sidebar = () => {
           >
             <div className="avatar hidden md:inline-flex">
               <div className="w-8 rounded-full">
-                <img src={getImageUrl(latestProfile?.profileImg || data?.profileImg, imageVersion)} />
+                <img src={getImageUrl(data?.profileImg, imageVersion)} />
               </div>
             </div>
             <div className="flex justify-between flex-1">
