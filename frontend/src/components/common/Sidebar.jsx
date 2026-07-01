@@ -5,32 +5,26 @@ import { IoNotifications } from 'react-icons/io5';
 import { FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { BiLogOut } from 'react-icons/bi';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
+import { apiRequest } from '../../utils/api';
 const Sidebar = () => {
   const queryClient = useQueryClient();
+  const { data } = useQuery({ queryKey: ['authUser'] });
+
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
-      const res = await fetch('/api/auth/logout', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
+      await apiRequest('/api/auth/logout', { method: 'POST' });
     },
     onSuccess: () => {
       queryClient.setQueryData(['authUser'], null);
+      queryClient.removeQueries({ predicate: ({ queryKey }) => queryKey[0] !== 'authUser' });
       toast.success('Logout successful');
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
-
-  const data = {
-    fullName: 'John Doe',
-    username: 'johndoe',
-    profileImg: '/avatars/boy1.png',
-  };
 
   return (
     <div className="md:flex-[2_2_0] w-18 max-w-52">

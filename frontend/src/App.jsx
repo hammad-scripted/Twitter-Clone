@@ -9,6 +9,7 @@ import RightPanel from './components/common/RightPanel';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { Toaster } from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
+import { normalizeUser, unwrapApiResponse } from './utils/api';
 const AppLayout = ({ children, rightPanelLoading = false }) => {
   return (
     <div className="flex max-w-6xl mx-auto">
@@ -27,17 +28,12 @@ function App() {
     queryKey: ['authUser'],
     queryFn: async () => {
       const res = await fetch('/api/auth/me');
-      const data = await res.json();
 
       if (res.status === 401) {
         return null;
       }
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
-
-      return data.data;
+      return normalizeUser(await unwrapApiResponse(res));
     },
     retry: false,
   });

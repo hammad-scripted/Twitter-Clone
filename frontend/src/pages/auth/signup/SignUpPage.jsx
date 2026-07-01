@@ -9,6 +9,7 @@ import { MdPassword } from 'react-icons/md';
 import { MdDriveFileRenameOutline } from 'react-icons/md';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
+import { apiRequest, normalizeUser } from '../../../utils/api';
 
 const SignUpPage = () => {
   const queryClient = useQueryClient();
@@ -21,28 +22,16 @@ const SignUpPage = () => {
 
   const { mutate, isError, isPending, error } = useMutation({
     mutationFn: async ({ email, username, fullName, password }) => {
-      const res = await fetch('/api/auth/signup', {
+      const data = await apiRequest('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, userName: username, fullName, password }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        const validationMessage = data.errors
-          ?.flatMap((error) => Object.values(error))
-          .join(', ');
-
-        throw new Error(
-          validationMessage || data.message || 'Something went wrong',
-        );
-      }
-
-      return data;
+      return normalizeUser(data);
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(['authUser'], data.data);
+    onSuccess: (user) => {
+      queryClient.setQueryData(['authUser'], user);
       toast.success('Account created successfully');
     },
     onError: (error) => {
