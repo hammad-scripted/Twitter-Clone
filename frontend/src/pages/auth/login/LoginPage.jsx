@@ -5,9 +5,10 @@ import XSvg from '../../../components/svgs/X';
 
 import { MdOutlineMail } from 'react-icons/md';
 import { MdPassword } from 'react-icons/md';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {toast} from 'react-hot-toast';
 const LoginPage = () => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -30,8 +31,8 @@ const LoginPage = () => {
       return data;
     },
 
-	onSuccess: () => {
-
+	onSuccess: (data) => {
+		queryClient.setQueryData(['authUser'], data.data);
 		toast.success('Logged in successfully');
 	},
 	onError: (error) => {
@@ -51,7 +52,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto flex h-screen">
+    <div className="flex-[4_4_0] mr-auto border-r border-gray-700 min-h-screen flex">
       <div className="flex-1 hidden lg:flex items-center  justify-center">
         <XSvg className="lg:w-2/3 fill-white" />
       </div>
@@ -82,8 +83,11 @@ const LoginPage = () => {
               value={formData.password}
             />
           </label>
-          <button className="btn rounded-full btn-primary text-white">
-            Login
+          <button
+            className="btn rounded-full btn-primary text-white"
+            disabled={isPending}
+          >
+            {isPending ? 'Loading...' : 'Login'}
           </button>
           {isError && <p className="text-red-500">{error.message}</p>}
         </form>

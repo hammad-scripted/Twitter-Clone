@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
 import { USERS_FOR_RIGHT_PANEL } from "../../utils/dummy";
 
-const RightPanel = () => {
-	const isLoading = false;
-
+const RightPanel = ({ isLoading = false }) => {
 	return (
 		<div className='hidden lg:block my-4 mx-2'>
 			<div className='bg-[#16181C] p-4 rounded-md sticky top-2'>
