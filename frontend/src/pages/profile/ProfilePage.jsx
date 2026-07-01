@@ -27,6 +27,13 @@ const ProfilePage = () => {
   const queryClient = useQueryClient();
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+
+  const handleProfileUpdated = (updatedUser) => {
+    setCoverImg(updatedUser?.coverImg || null);
+    setProfileImg(updatedUser?.profileImg || null);
+    setCoverImgFile(null);
+    setProfileImgFile(null);
+  };
   const {
     data: user,
     isLoading,
@@ -130,7 +137,12 @@ const ProfilePage = () => {
               </div>
               <div className="flex justify-end px-4 mt-5">
                 {isMyProfile && (
-                  <EditProfileModal user={user} coverImgFile={coverImgFile} profileImgFile={profileImgFile} />
+                  <EditProfileModal
+                    user={user}
+                    coverImgFile={coverImgFile}
+                    profileImgFile={profileImgFile}
+                    onProfileUpdated={handleProfileUpdated}
+                  />
                 )}
                 {!isMyProfile && (
                   <button

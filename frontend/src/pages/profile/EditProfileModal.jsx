@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 
 import { apiRequest } from '../../utils/api';
 
-const EditProfileModal = ({ user, coverImgFile, profileImgFile }) => {
+const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -57,6 +57,7 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile }) => {
       queryClient.setQueryData(['authUser'], updatedUser);
       queryClient.setQueryData(['profile', user?.username], updatedUser);
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      onProfileUpdated?.(updatedUser);
       toast.success('Profile updated successfully');
       document.getElementById('edit_profile_modal')?.close();
     },
