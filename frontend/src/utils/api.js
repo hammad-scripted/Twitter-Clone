@@ -17,6 +17,16 @@ export const apiRequest = async (url, options = {}, config) => {
   return unwrapApiResponse(res, config);
 };
 
+export const getAuthUser = async () => {
+  const res = await fetch('/api/auth/me', { credentials: 'include' });
+
+  if (res.status === 401) {
+    return null;
+  }
+
+  return normalizeUser(await unwrapApiResponse(res));
+};
+
 export const normalizeUser = (user) => {
   if (!user) return user;
 

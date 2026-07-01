@@ -6,7 +6,7 @@ import { FaRegComment, FaRegHeart, FaTrash } from 'react-icons/fa';
 import { BiRepost } from 'react-icons/bi';
 import { FaRegBookmark } from 'react-icons/fa6';
 
-import { apiRequest } from '../../utils/api';
+import { apiRequest, getAuthUser } from '../../utils/api';
 
 const formatPostDate = (date) => {
   if (!date) return '';
@@ -28,7 +28,7 @@ const Post = ({ post }) => {
   const [comment, setComment] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+  const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
   const postOwner = post.user;
   const isLiked = post.likes?.some((id) => id === authUser?._id);
   const isMyPost = authUser?._id === postOwner?._id;

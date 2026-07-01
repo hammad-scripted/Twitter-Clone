@@ -5,7 +5,7 @@ import { CiImageOn } from 'react-icons/ci';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 import { IoCloseSharp } from 'react-icons/io5';
 
-import { apiRequest } from '../../utils/api';
+import { apiRequest, getAuthUser } from '../../utils/api';
 
 const CreatePost = () => {
   const [text, setText] = useState('');
@@ -15,7 +15,7 @@ const CreatePost = () => {
   const imgRef = useRef(null);
   const queryClient = useQueryClient();
 
-  const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+  const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
   const {
     mutate: createPost,
     isPending,

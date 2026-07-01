@@ -12,7 +12,7 @@ import { IoCalendarOutline } from 'react-icons/io5';
 import { FaLink } from 'react-icons/fa';
 import { MdEdit } from 'react-icons/md';
 
-import { apiRequest, normalizeUser } from '../../utils/api';
+import { apiRequest, getAuthUser, normalizeUser } from '../../utils/api';
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -26,7 +26,7 @@ const ProfilePage = () => {
   const profileImgRef = useRef(null);
   const queryClient = useQueryClient();
 
-  const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+  const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
 
   const handleProfileUpdated = (updatedUser) => {
     setCoverImg(updatedUser?.coverImg || null);

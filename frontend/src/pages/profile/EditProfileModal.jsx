@@ -56,6 +56,7 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(['authUser'], updatedUser);
       queryClient.setQueryData(['profile', user?.username], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ['authUser'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       onProfileUpdated?.(updatedUser);
       toast.success('Profile updated successfully');
