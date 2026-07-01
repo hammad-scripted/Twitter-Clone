@@ -29,7 +29,7 @@ const Post = ({ post }) => {
   const queryClient = useQueryClient();
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
-  const imageVersion = useQueryClient().getQueryData(['profileImageVersion']) || 0;
+  const imageVersion = queryClient.getQueryData(['profileImageVersion']) || 0;
   const postOwner = post.user;
   const isLiked = post.likes?.some((id) => id === authUser?._id);
   const isMyPost = authUser?._id === postOwner?._id;

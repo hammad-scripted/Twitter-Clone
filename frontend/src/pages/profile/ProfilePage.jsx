@@ -73,6 +73,8 @@ const ProfilePage = () => {
   });
 
   const profileUser = profileData || user;
+  const resolvedProfileImg = profileImg || profileUser?.profileImg || null;
+  const resolvedCoverImg = coverImg || profileUser?.coverImg || null;
   const isMyProfile = authUser?.username === profileUser?.username || authUser?._id === profileUser?._id;
   const isFollowing = authUser?.following?.some((id) => id?.toString() === profileUser?._id?.toString());
 
@@ -138,7 +140,7 @@ const ProfilePage = () => {
               <div className="relative group/cover">
                 <img
                   key={`cover-${imageVersion}-${profileUser?.coverImg || ''}`}
-                  src={getDisplayImageUrl(coverImg || profileUser?.coverImg || '/cover.png')}
+                  src={getDisplayImageUrl(resolvedCoverImg || '/cover.png')}
                   className="h-52 w-full object-cover"
                   alt="cover image"
                 />
@@ -157,7 +159,7 @@ const ProfilePage = () => {
                   <div className="w-32 rounded-full relative group/avatar">
                     <img
                       key={`profile-${imageVersion}-${profileUser?.profileImg || ''}`}
-                      src={getDisplayImageUrl(profileImg || profileUser?.profileImg || '/avatar-placeholder.png')}
+                      src={getDisplayImageUrl(resolvedProfileImg || '/avatar-placeholder.png')}
                     />
                     <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
                       {isMyProfile && (

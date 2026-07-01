@@ -7,6 +7,7 @@ import { apiRequest, normalizeUser } from '../../utils/api';
 
 const RightPanel = ({ isLoading = false }) => {
   const queryClient = useQueryClient();
+  const imageVersion = queryClient.getQueryData(['profileImageVersion']) || 0;
 
   const { data: users = [], isLoading: isUsersLoading } = useQuery({
     queryKey: ['suggestedUsers'],
@@ -42,7 +43,7 @@ const RightPanel = ({ isLoading = false }) => {
                 <Link to={`/profile/${user.username}`} className="flex gap-2 items-center flex-1">
                   <div className="avatar">
                     <div className="w-8 rounded-full">
-                      <img src={user.profileImg || '/avatar-placeholder.png'} />
+                      <img src={user.profileImg ? `${user.profileImg}${user.profileImg.includes('?') ? '&' : '?'}v=${imageVersion}` : '/avatar-placeholder.png'} />
                     </div>
                   </div>
                   <div className="flex flex-col">
