@@ -8,14 +8,11 @@ import { BiLogOut } from 'react-icons/bi';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
+import { useImageVersion } from '../../hooks/useImageVersion';
 const Sidebar = () => {
   const queryClient = useQueryClient();
   const { data } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
-  const { data: imageVersion = 0 } = useQuery({
-    queryKey: ['profileImageVersion'],
-    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
-    staleTime: Infinity,
-  });
+  const imageVersion = useImageVersion();
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
