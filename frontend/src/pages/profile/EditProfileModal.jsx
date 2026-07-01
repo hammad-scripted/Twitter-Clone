@@ -40,8 +40,14 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
   const { mutate: updateProfile, isPending } = useMutation({
     mutationFn: async (payload) => {
       const formDataToSend = new FormData();
+      const normalizedPayload = {
+        ...payload,
+        userName: payload.username || payload.userName || '',
+      };
 
-      Object.entries(payload).forEach(([key, value]) => {
+      delete normalizedPayload.username;
+
+      Object.entries(normalizedPayload).forEach(([key, value]) => {
         if (value) formDataToSend.append(key, value);
       });
 

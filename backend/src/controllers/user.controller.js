@@ -99,19 +99,21 @@ export const followUnfollowUser = async (req, res, next) => {
 };
 
 export const updateUserProfile = async (req, res, next) => {
-  console.log(req.headers['content-type']);
-  console.log(req.body);
-  console.log(req.files);
   try {
     const {
       fullName,
       email,
       userName,
+      username,
       bio,
       link,
       currentPassword,
       newPassword,
     } = req.body || {};
+
+    const profileImgFile = req.files?.profileImg || req.files?.['profileImg'];
+    const coverImgFile = req.files?.coverImg || req.files?.['coverImg'];
+    const resolvedUserName = userName || username;
 
     const user = await User.findById(req.user._id);
 
@@ -163,11 +165,11 @@ export const updateUserProfile = async (req, res, next) => {
     // PROFILE IMAGE
     // =====================
 
-    if (req.files?.profileImg) {
+    if (profileImgFile) {
       await deleteImage(user.profileImgId);
 
       const image = await uploadImage(
-        req.files.profileImg,
+        profileImgFile,
         'twitter-clone/profile',
       );
 
@@ -179,11 +181,11 @@ export const updateUserProfile = async (req, res, next) => {
     // COVER IMAGE
     // =====================
 
-    if (req.files?.coverImg) {
+    if (coverImgFile) {
       await deleteImage(user.coverImgId);
 
       const image = await uploadImage(
-        req.files.coverImg,
+        coverImgFile,
         'twitter-clone/cover',
       );
 
@@ -197,7 +199,7 @@ export const updateUserProfile = async (req, res, next) => {
 
     user.fullName = fullName ?? user.fullName;
     user.email = email ?? user.email;
-    user.userName = userName ?? user.userName;
+    user.userName = resolvedUserName ?? user.userName;
     user.bio = bio ?? user.bio;
     user.link = link ?? user.link;
 

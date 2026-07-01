@@ -23,7 +23,7 @@ const Posts = ({ feedType = 'forYou', username, userId }) => {
       normalizePosts(
         await apiRequest(getPostsEndpoint(), undefined, { emptyOn404: true }),
       ),
-    enabled: feedType !== 'likes' || Boolean(userId),
+    enabled: (feedType === 'user' ? Boolean(username) : true) && (feedType !== 'likes' || Boolean(userId)),
   });
 
   return (
