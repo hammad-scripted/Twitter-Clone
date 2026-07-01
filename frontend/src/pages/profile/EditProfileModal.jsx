@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
-import { apiRequest } from '../../utils/api';
+import { apiRequest, normalizeUser } from '../../utils/api';
 
 const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated }) => {
   const [formData, setFormData] = useState({
@@ -60,11 +60,17 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
       });
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(['authUser'], updatedUser);
-      queryClient.setQueryData(['profile', user?.username], updatedUser);
+      const normalizedUser = normalizeUser(updatedUser);
+
+      queryClient.setQueryData(['authUser'], normalizedUser);
+      queryClient.setQueryData(['profile', user?.username], normalizedUser);
+      queryClient.setQueryData(['profileImageVersion'], Date.now());
+      queryClient.setQueriesData({ queryKey: ['profile'] }, (prev) => prev ? { ...prev, ...normalizedUser } : prev);
       queryClient.invalidateQueries({ queryKey: ['authUser'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      onProfileUpdated?.(updatedUser);
+      queryClient.refetchQueries({ queryKey: ['authUser'], exact: true });
+      queryClient.refetchQueries({ queryKey: ['profile'], exact: false });
+      onProfileUpdated?.(normalizedUser);
       toast.success('Profile updated successfully');
       document.getElementById('edit_profile_modal')?.close();
     },

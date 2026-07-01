@@ -11,6 +11,7 @@ import { apiRequest, getAuthUser } from '../../utils/api';
 const Sidebar = () => {
   const queryClient = useQueryClient();
   const { data } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
+  const imageVersion = queryClient.getQueryData(['profileImageVersion']) || 0;
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
@@ -69,7 +70,7 @@ const Sidebar = () => {
           >
             <div className="avatar hidden md:inline-flex">
               <div className="w-8 rounded-full">
-                <img src={data?.profileImg || '/avatar-placeholder.png'} />
+                <img src={data?.profileImg ? `${data.profileImg}${data.profileImg.includes('?') ? '&' : '?'}v=${imageVersion}` : '/avatar-placeholder.png'} />
               </div>
             </div>
             <div className="flex justify-between flex-1">

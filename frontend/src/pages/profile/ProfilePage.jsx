@@ -21,6 +21,7 @@ const ProfilePage = () => {
   const [coverImgFile, setCoverImgFile] = useState(null);
   const [profileImgFile, setProfileImgFile] = useState(null);
   const [feedType, setFeedType] = useState('posts');
+  const [imageVersion, setImageVersion] = useState(0);
 
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
@@ -28,11 +29,35 @@ const ProfilePage = () => {
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
 
-  const handleProfileUpdated = (updatedUser) => {
-    setCoverImg(updatedUser?.coverImg || null);
-    setProfileImg(updatedUser?.profileImg || null);
+  const getDisplayImageUrl = (url) => {
+    if (!url) return '/avatar-placeholder.png';
+
+    if (typeof url === 'string' && url.startsWith('data:image/')) {
+      return url;
+    }
+
+    if (typeof url === 'string' && url.startsWith('http')) {
+      const separator = url.includes('?') ? '&' : '?';
+      return `${url}${separator}v=${imageVersion}`;
+    }
+
+    return url;
+  };
+
+  const handleProfileUpdated = async (updatedUser) => {
+    const normalizedUser = normalizeUser(updatedUser);
+
+    setCoverImg(normalizedUser?.coverImg || null);
+    setProfileImg(normalizedUser?.profileImg || null);
     setCoverImgFile(null);
     setProfileImgFile(null);
+    setImageVersion(Date.now());
+
+    queryClient.setQueryData(['authUser'], normalizedUser);
+    queryClient.setQueryData(['profile', username], normalizedUser);
+    queryClient.setQueryData(['profileImageVersion'], Date.now());
+    await queryClient.invalidateQueries({ queryKey: ['profile', username] });
+    await queryClient.refetchQueries({ queryKey: ['profile', username], exact: true });
   };
   const {
     data: user,
@@ -109,7 +134,7 @@ const ProfilePage = () => {
               </div>
               <div className="relative group/cover">
                 <img
-                  src={coverImg || user?.coverImg || '/cover.png'}
+                  src={getDisplayImageUrl(coverImg || user?.coverImg || '/cover.png')}
                   className="h-52 w-full object-cover"
                   alt="cover image"
                 />
@@ -126,7 +151,7 @@ const ProfilePage = () => {
                 <input type="file" hidden ref={profileImgRef} onChange={(e) => handleImgChange(e, 'profileImg')} />
                 <div className="avatar absolute -bottom-16 left-4">
                   <div className="w-32 rounded-full relative group/avatar">
-                    <img src={profileImg || user?.profileImg || '/avatar-placeholder.png'} />
+                    <img src={getDisplayImageUrl(profileImg || user?.profileImg || '/avatar-placeholder.png')} />
                     <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
                       {isMyProfile && (
                         <MdEdit className="w-4 h-4 text-white" onClick={() => profileImgRef.current.click()} />
