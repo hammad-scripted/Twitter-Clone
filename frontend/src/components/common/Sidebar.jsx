@@ -7,11 +7,20 @@ import { Link } from 'react-router-dom';
 import { BiLogOut } from 'react-icons/bi';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { apiRequest, getAuthUser } from '../../utils/api';
+import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
 const Sidebar = () => {
   const queryClient = useQueryClient();
   const { data } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
-  const imageVersion = queryClient.getQueryData(['profileImageVersion']) || 0;
+  const { data: imageVersion = 0 } = useQuery({
+    queryKey: ['profileImageVersion'],
+    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
+    staleTime: Infinity,
+  });
+  const { data: latestProfile } = useQuery({
+    queryKey: ['latestProfile'],
+    queryFn: () => queryClient.getQueryData(['latestProfile']) || data,
+    staleTime: Infinity,
+  });
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
@@ -70,7 +79,7 @@ const Sidebar = () => {
           >
             <div className="avatar hidden md:inline-flex">
               <div className="w-8 rounded-full">
-                <img src={data?.profileImg ? `${data.profileImg}${data.profileImg.includes('?') ? '&' : '?'}v=${imageVersion}` : '/avatar-placeholder.png'} />
+                <img src={getImageUrl(latestProfile?.profileImg || data?.profileImg, imageVersion)} />
               </div>
             </div>
             <div className="flex justify-between flex-1">

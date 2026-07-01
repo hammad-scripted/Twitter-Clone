@@ -5,7 +5,7 @@ import { CiImageOn } from 'react-icons/ci';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 import { IoCloseSharp } from 'react-icons/io5';
 
-import { apiRequest, getAuthUser } from '../../utils/api';
+import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
 
 const CreatePost = () => {
   const [text, setText] = useState('');
@@ -16,6 +16,11 @@ const CreatePost = () => {
   const queryClient = useQueryClient();
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
+  const { data: imageVersion = 0 } = useQuery({
+    queryKey: ['profileImageVersion'],
+    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
+    staleTime: Infinity,
+  });
   const {
     mutate: createPost,
     isPending,
@@ -65,7 +70,7 @@ const CreatePost = () => {
     <div className="flex p-4 items-start gap-4 border-b border-gray-700">
       <div className="avatar">
         <div className="w-8 rounded-full">
-          <img src={authUser?.profileImg || '/avatar-placeholder.png'} />
+          <img src={getImageUrl(authUser?.profileImg, imageVersion)} />
         </div>
       </div>
       <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>

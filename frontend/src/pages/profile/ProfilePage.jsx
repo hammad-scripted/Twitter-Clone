@@ -12,7 +12,7 @@ import { IoCalendarOutline } from 'react-icons/io5';
 import { FaLink } from 'react-icons/fa';
 import { MdEdit } from 'react-icons/md';
 
-import { apiRequest, getAuthUser, normalizeUser } from '../../utils/api';
+import { apiRequest, getAuthUser, getImageUrl, normalizeUser, syncUserInCache } from '../../utils/api';
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -30,20 +30,7 @@ const ProfilePage = () => {
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
 
-  const getDisplayImageUrl = (url) => {
-    if (!url) return '/avatar-placeholder.png';
-
-    if (typeof url === 'string' && url.startsWith('data:image/')) {
-      return url;
-    }
-
-    if (typeof url === 'string' && url.startsWith('http')) {
-      const separator = url.includes('?') ? '&' : '?';
-      return `${url}${separator}v=${imageVersion}`;
-    }
-
-    return url;
-  };
+  const getDisplayImageUrl = (url) => getImageUrl(url, imageVersion);
 
   const handleProfileUpdated = async (updatedUser) => {
     const normalizedUser = normalizeUser(updatedUser);
@@ -55,9 +42,7 @@ const ProfilePage = () => {
     setProfileImgFile(null);
     setImageVersion(Date.now());
 
-    queryClient.setQueryData(['authUser'], normalizedUser);
-    queryClient.setQueryData(['profile', username], normalizedUser);
-    queryClient.setQueryData(['profileImageVersion'], Date.now());
+    syncUserInCache(queryClient, normalizedUser);
     await queryClient.invalidateQueries({ queryKey: ['profile', username] });
     await queryClient.refetchQueries({ queryKey: ['profile', username], exact: true });
   };

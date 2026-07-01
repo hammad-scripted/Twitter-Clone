@@ -3,11 +3,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
 import RightPanelSkeleton from '../skeletons/RightPanelSkeleton';
-import { apiRequest, normalizeUser } from '../../utils/api';
+import { apiRequest, getImageUrl, normalizeUser } from '../../utils/api';
 
 const RightPanel = ({ isLoading = false }) => {
   const queryClient = useQueryClient();
-  const imageVersion = queryClient.getQueryData(['profileImageVersion']) || 0;
+  const { data: imageVersion = 0 } = useQuery({
+    queryKey: ['profileImageVersion'],
+    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
+    staleTime: Infinity,
+  });
+  const { data: latestProfile } = useQuery({
+    queryKey: ['latestProfile'],
+    queryFn: () => queryClient.getQueryData(['latestProfile']) || null,
+    staleTime: Infinity,
+  });
 
   const { data: users = [], isLoading: isUsersLoading } = useQuery({
     queryKey: ['suggestedUsers'],
@@ -43,7 +52,7 @@ const RightPanel = ({ isLoading = false }) => {
                 <Link to={`/profile/${user.username}`} className="flex gap-2 items-center flex-1">
                   <div className="avatar">
                     <div className="w-8 rounded-full">
-                      <img src={user.profileImg ? `${user.profileImg}${user.profileImg.includes('?') ? '&' : '?'}v=${imageVersion}` : '/avatar-placeholder.png'} />
+                      <img src={getImageUrl(latestProfile?.profileImg || user.profileImg, imageVersion)} />
                     </div>
                   </div>
                   <div className="flex flex-col">

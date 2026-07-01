@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
-import { apiRequest, normalizeUser } from '../../utils/api';
+import { apiRequest, syncUserInCache } from '../../utils/api';
 
 const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated }) => {
   const [formData, setFormData] = useState({
@@ -60,14 +60,13 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
       });
     },
     onSuccess: (updatedUser) => {
-      const normalizedUser = normalizeUser(updatedUser);
+      const normalizedUser = syncUserInCache(queryClient, updatedUser);
 
-      queryClient.setQueryData(['authUser'], normalizedUser);
-      queryClient.setQueryData(['profile', normalizedUser?.username || normalizedUser?.userName], normalizedUser);
-      queryClient.setQueryData(['profileImageVersion'], Date.now());
-      queryClient.setQueriesData({ queryKey: ['profile'] }, (prev) => prev ? { ...prev, ...normalizedUser } : prev);
       queryClient.invalidateQueries({ queryKey: ['authUser'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['suggestedUsers'] });
       queryClient.refetchQueries({ queryKey: ['authUser'], exact: true });
       queryClient.refetchQueries({ queryKey: ['profile'], exact: false });
       onProfileUpdated?.(normalizedUser);

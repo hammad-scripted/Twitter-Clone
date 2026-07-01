@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import { apiRequest, normalizeUser } from '../../utils/api';
+import { apiRequest, getImageUrl, normalizeUser } from '../../utils/api';
 
 import { IoSettingsOutline } from 'react-icons/io5';
 import { FaUser } from 'react-icons/fa';
@@ -11,6 +11,11 @@ import { FaHeart } from 'react-icons/fa6';
 
 const NotificationPage = () => {
   const queryClient = useQueryClient();
+  const { data: imageVersion = 0 } = useQuery({
+    queryKey: ['profileImageVersion'],
+    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
+    staleTime: Infinity,
+  });
 
   const {
     data: notifications = [],
@@ -72,7 +77,7 @@ const NotificationPage = () => {
                 <Link to={`/profile/${senderUsername}`} className="flex gap-2 items-center">
                   <div className="avatar">
                     <div className="w-8 rounded-full">
-                      <img src={notification.from?.profileImg || '/avatar-placeholder.png'} />
+                      <img src={getImageUrl(notification.from?.profileImg, imageVersion)} />
                     </div>
                   </div>
                   <div className="flex gap-1">

@@ -6,7 +6,7 @@ import { FaRegComment, FaRegHeart, FaTrash } from 'react-icons/fa';
 import { BiRepost } from 'react-icons/bi';
 import { FaRegBookmark } from 'react-icons/fa6';
 
-import { apiRequest, getAuthUser } from '../../utils/api';
+import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
 
 const formatPostDate = (date) => {
   if (!date) return '';
@@ -29,7 +29,16 @@ const Post = ({ post }) => {
   const queryClient = useQueryClient();
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
-  const imageVersion = queryClient.getQueryData(['profileImageVersion']) || 0;
+  const { data: imageVersion = 0 } = useQuery({
+    queryKey: ['profileImageVersion'],
+    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
+    staleTime: Infinity,
+  });
+  const { data: latestProfile } = useQuery({
+    queryKey: ['latestProfile'],
+    queryFn: () => queryClient.getQueryData(['latestProfile']) || null,
+    staleTime: Infinity,
+  });
   const postOwner = post.user;
   const isLiked = post.likes?.some((id) => id === authUser?._id);
   const isMyPost = authUser?._id === postOwner?._id;
@@ -83,7 +92,7 @@ const Post = ({ post }) => {
           to={`/profile/${postOwner.username}`}
           className="w-8 rounded-full overflow-hidden"
         >
-          <img src={postOwner.profileImg ? `${postOwner.profileImg}${postOwner.profileImg.includes('?') ? '&' : '?'}v=${imageVersion}` : '/avatar-placeholder.png'} />
+          <img src={getImageUrl(latestProfile?.profileImg || postOwner.profileImg, imageVersion)} />
         </Link>
       </div>
       <div className="flex flex-col flex-1">
@@ -148,11 +157,7 @@ const Post = ({ post }) => {
                       <div className="avatar">
                         <div className="w-8 rounded-full">
                           <img
-                            src={
-                              comment.user.profileImg
-                                ? `${comment.user.profileImg}${comment.user.profileImg.includes('?') ? '&' : '?'}v=${imageVersion}`
-                                : '/avatar-placeholder.png'
-                            }
+                            src={getImageUrl(comment.user.profileImg, imageVersion)}
                           />
                         </div>
                       </div>
