@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import { apiRequest } from '../../utils/api';
+import { apiRequest, normalizeUser } from '../../utils/api';
 
 import { IoSettingsOutline } from 'react-icons/io5';
 import { FaUser } from 'react-icons/fa';
@@ -62,7 +62,8 @@ const NotificationPage = () => {
           <div className="text-center p-4 font-bold">No notifications 🤔</div>
         )}
         {notifications?.map((notification) => {
-          const senderUsername = notification.from?.username || notification.from?.userName;
+          const senderUser = normalizeUser(notification.from);
+          const senderUsername = senderUser?.username;
           return (
             <div className="border-b border-gray-700" key={notification._id}>
               <div className="flex gap-2 p-4">

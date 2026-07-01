@@ -42,10 +42,10 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
       const formDataToSend = new FormData();
       const normalizedPayload = {
         ...payload,
-        userName: payload.username || payload.userName || '',
+        username: payload.username || payload.userName || '',
       };
 
-      delete normalizedPayload.username;
+      delete normalizedPayload.userName;
 
       Object.entries(normalizedPayload).forEach(([key, value]) => {
         if (value) formDataToSend.append(key, value);
@@ -63,7 +63,7 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
       const normalizedUser = normalizeUser(updatedUser);
 
       queryClient.setQueryData(['authUser'], normalizedUser);
-      queryClient.setQueryData(['profile', user?.username], normalizedUser);
+      queryClient.setQueryData(['profile', normalizedUser?.username || normalizedUser?.userName], normalizedUser);
       queryClient.setQueryData(['profileImageVersion'], Date.now());
       queryClient.setQueriesData({ queryKey: ['profile'] }, (prev) => prev ? { ...prev, ...normalizedUser } : prev);
       queryClient.invalidateQueries({ queryKey: ['authUser'] });

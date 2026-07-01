@@ -20,7 +20,7 @@ const LoginPage = () => {
       const data = await apiRequest('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userName: username, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       return normalizeUser(data);

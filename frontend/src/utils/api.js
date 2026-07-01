@@ -30,9 +30,12 @@ export const getAuthUser = async () => {
 export const normalizeUser = (user) => {
   if (!user) return user;
 
+  const nextUsername = user.username || user.userName || '';
+
   return {
     ...user,
-    username: user.username || user.userName,
+    username: nextUsername,
+    userName: nextUsername,
   };
 };
 

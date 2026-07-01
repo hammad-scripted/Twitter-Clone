@@ -280,10 +280,11 @@ export const getFollowingPosts = async (req, res, next) => {
       ),
     );
 };export const getUserPosts = async (req, res, next) => {
-  const { userName } = req.params;
+  const { username, userName } = req.params;
+  const resolvedUsername = username || userName;
 
   const user = await User.findOne({
-    userName,
+    userName: resolvedUsername,
   });
 
   if (!user) {

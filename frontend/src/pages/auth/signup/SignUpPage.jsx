@@ -25,7 +25,7 @@ const SignUpPage = () => {
       const data = await apiRequest('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, userName: username, fullName, password }),
+        body: JSON.stringify({ email, username, fullName, password }),
       });
 
       return normalizeUser(data);

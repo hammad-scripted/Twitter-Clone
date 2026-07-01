@@ -9,7 +9,7 @@ const userValidationRules = () => {
       .notEmpty()
       .withMessage('Full name is required'),
 
-    body('userName')
+    body('username')
       .trim()
       .notEmpty()
       .withMessage('Username is required'),

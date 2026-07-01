@@ -5,9 +5,10 @@ import ApiResponse from '../utils/apiResponse.js';
 import { generateTokenAndSetCookie } from '../utils/token.js';
 import { verifyPassword } from '../utils/verifyPassword.js';
 export const login = async (req, res, next) => {
-  const { userName, password } = req.body;
+  const { username, userName, password } = req.body;
+  const resolvedUsername = username || userName;
 
-  const user = await User.findOne({ userName });
+  const user = await User.findOne({ userName: resolvedUsername });
 
   if (!user) {
     return next(new ApiError(StatusCodes.NOT_FOUND, 'User not found'));
@@ -35,10 +36,11 @@ export const logout = async (req, res, next) => {
 };
 
 export const signup = async (req, res, next) => {
-  const { fullName, userName, email, password } = req.body;
+  const { fullName, username, userName, email, password } = req.body;
+  const resolvedUsername = username || userName;
 
   const existingUser = await User.findOne({
-    $or: [{ userName: userName }, { email: email }],
+    $or: [{ userName: resolvedUsername }, { email: email }],
   });
 
   if (existingUser) {
@@ -47,7 +49,7 @@ export const signup = async (req, res, next) => {
 
   const newUser = new User({
     fullName,
-    userName,
+    userName: resolvedUsername,
     email,
     password,
   });

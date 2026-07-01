@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.get('/profile/:userName', getUserProfile);
+router.get('/profile/:username', getUserProfile);
 router.get('/suggested', protect, getSuggestedUsers);
 router.post('/follow/:id', protect, followUnfollowUser);
 router.put("/update",protect,updateUserProfile)

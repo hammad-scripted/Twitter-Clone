@@ -9,9 +9,10 @@ import cloudinary from '../utils/cloudinary.js';
 import { deleteImage } from '../utils/cloudinary.js';
 import {uploadImage} from '../utils/cloudinary.js';
 export const getUserProfile = async (req, res, next) => {
-  const { userName } = req.params;
+  const { username, userName } = req.params;
+  const resolvedUsername = username || userName;
 
-  const user = await User.findOne({ userName }).select('-password');
+  const user = await User.findOne({ userName: resolvedUsername }).select('-password');
   if (!user) {
     return next(new ApiError(StatusCodes.NOT_FOUND, 'User not found'));
   }
@@ -102,7 +103,6 @@ export const updateUserProfile = async (req, res, next) => {
   try {
     const {
       fullName,
-      email,
       userName,
       username,
       bio,
@@ -113,7 +113,7 @@ export const updateUserProfile = async (req, res, next) => {
 
     const profileImgFile = req.files?.profileImg || req.files?.['profileImg'];
     const coverImgFile = req.files?.coverImg || req.files?.['coverImg'];
-    const resolvedUserName = userName || username;
+    const resolvedUserName = username || userName;
 
     const user = await User.findById(req.user._id);
 
