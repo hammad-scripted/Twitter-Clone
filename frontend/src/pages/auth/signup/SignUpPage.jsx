@@ -33,7 +33,9 @@ const SignUpPage = () => {
           ?.flatMap((error) => Object.values(error))
           .join(', ');
 
-        throw new Error(validationMessage || data.message || 'Something went wrong');
+        throw new Error(
+          validationMessage || data.message || 'Something went wrong',
+        );
       }
 
       return data;
@@ -41,8 +43,8 @@ const SignUpPage = () => {
     onSuccess: () => {
       toast.success('Account created successfully');
     },
-    onError: (err) => {
-      toast.error(err.message);
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
