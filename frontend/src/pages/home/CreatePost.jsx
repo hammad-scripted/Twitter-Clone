@@ -6,6 +6,7 @@ import { BsEmojiSmileFill } from 'react-icons/bs';
 import { IoCloseSharp } from 'react-icons/io5';
 
 import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
+import { useImageVersion } from '../../hooks/useImageVersion';
 
 const CreatePost = () => {
   const [text, setText] = useState('');
@@ -16,11 +17,7 @@ const CreatePost = () => {
   const queryClient = useQueryClient();
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
-  const { data: imageVersion = 0 } = useQuery({
-    queryKey: ['profileImageVersion'],
-    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
-    staleTime: Infinity,
-  });
+  const imageVersion = useImageVersion();
   const {
     mutate: createPost,
     isPending,

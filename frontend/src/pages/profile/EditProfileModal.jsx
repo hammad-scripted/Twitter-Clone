@@ -60,21 +60,26 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
       });
     },
     onSuccess: (updatedUser) => {
+      // Immediately update all caches with fresh data
       const normalizedUser = syncUserInCache(queryClient, updatedUser);
 
-      queryClient.invalidateQueries({ queryKey: ['authUser'] });
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['suggestedUsers'] });
+      // Refetch auth user to confirm latest state from server
       queryClient.refetchQueries({ queryKey: ['authUser'], exact: true });
-      queryClient.refetchQueries({ queryKey: ['profile'], exact: false });
+
+      // Invalidate posts and suggested users so they refetch with updated profileImg
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['suggestedUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+
+      // Notify ProfilePage so it updates its local state
       onProfileUpdated?.(normalizedUser);
+
       toast.success('Profile updated successfully');
       document.getElementById('edit_profile_modal')?.close();
     },
     onError: (error) => toast.error(error.message),
   });
+
 
   return (
     <>

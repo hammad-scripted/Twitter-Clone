@@ -4,14 +4,11 @@ import { toast } from 'react-hot-toast';
 
 import RightPanelSkeleton from '../skeletons/RightPanelSkeleton';
 import { apiRequest, getImageUrl, normalizeUser } from '../../utils/api';
+import { useImageVersion } from '../../hooks/useImageVersion';
 
 const RightPanel = ({ isLoading = false }) => {
   const queryClient = useQueryClient();
-  const { data: imageVersion = 0 } = useQuery({
-    queryKey: ['profileImageVersion'],
-    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
-    staleTime: Infinity,
-  });
+  const imageVersion = useImageVersion();
 
   const { data: users = [], isLoading: isUsersLoading } = useQuery({
     queryKey: ['suggestedUsers'],

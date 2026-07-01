@@ -7,6 +7,7 @@ import { BiRepost } from 'react-icons/bi';
 import { FaRegBookmark } from 'react-icons/fa6';
 
 import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
+import { useImageVersion } from '../../hooks/useImageVersion';
 
 const formatPostDate = (date) => {
   if (!date) return '';
@@ -29,11 +30,7 @@ const Post = ({ post }) => {
   const queryClient = useQueryClient();
 
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
-  const { data: imageVersion = 0 } = useQuery({
-    queryKey: ['profileImageVersion'],
-    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
-    staleTime: Infinity,
-  });
+  const imageVersion = useImageVersion();
   const postOwner = post.user;
   const isLiked = post.likes?.some((id) => id === authUser?._id);
   const isMyPost = authUser?._id === postOwner?._id;

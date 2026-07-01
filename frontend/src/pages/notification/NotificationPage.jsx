@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { apiRequest, getImageUrl, normalizeUser } from '../../utils/api';
+import { useImageVersion } from '../../hooks/useImageVersion';
 
 import { IoSettingsOutline } from 'react-icons/io5';
 import { FaUser } from 'react-icons/fa';
@@ -11,11 +12,7 @@ import { FaHeart } from 'react-icons/fa6';
 
 const NotificationPage = () => {
   const queryClient = useQueryClient();
-  const { data: imageVersion = 0 } = useQuery({
-    queryKey: ['profileImageVersion'],
-    queryFn: () => queryClient.getQueryData(['profileImageVersion']) || 0,
-    staleTime: Infinity,
-  });
+  const imageVersion = useImageVersion();
 
   const {
     data: notifications = [],

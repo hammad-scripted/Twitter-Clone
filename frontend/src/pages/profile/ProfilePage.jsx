@@ -12,7 +12,8 @@ import { IoCalendarOutline } from 'react-icons/io5';
 import { FaLink } from 'react-icons/fa';
 import { MdEdit } from 'react-icons/md';
 
-import { apiRequest, getAuthUser, getImageUrl, normalizeUser, syncUserInCache } from '../../utils/api';
+import { apiRequest, getAuthUser, getImageUrl, normalizeUser } from '../../utils/api';
+
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -32,9 +33,10 @@ const ProfilePage = () => {
 
   const getDisplayImageUrl = (url) => getImageUrl(url, imageVersion);
 
-  const handleProfileUpdated = async (updatedUser) => {
+  const handleProfileUpdated = (updatedUser) => {
     const normalizedUser = normalizeUser(updatedUser);
 
+    // Update local display state immediately (shows new image before refetch)
     setProfileData(normalizedUser);
     setCoverImg(normalizedUser?.coverImg || null);
     setProfileImg(normalizedUser?.profileImg || null);
@@ -42,10 +44,10 @@ const ProfilePage = () => {
     setProfileImgFile(null);
     setImageVersion(Date.now());
 
-    syncUserInCache(queryClient, normalizedUser);
-    await queryClient.invalidateQueries({ queryKey: ['profile', username] });
-    await queryClient.refetchQueries({ queryKey: ['profile', username], exact: true });
+    // Invalidate the profile query so next visit gets fresh data
+    queryClient.invalidateQueries({ queryKey: ['profile', username] });
   };
+
   const {
     data: user,
     isLoading,
