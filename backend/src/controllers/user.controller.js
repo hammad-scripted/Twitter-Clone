@@ -109,6 +109,7 @@ export const updateUserProfile = async (req, res, next) => {
       link,
       currentPassword,
       newPassword,
+      email,
     } = req.body || {};
 
     const profileImgFile = req.files?.profileImg || req.files?.['profileImg'];
