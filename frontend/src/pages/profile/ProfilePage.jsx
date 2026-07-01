@@ -1,62 +1,93 @@
 import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-hot-toast';
 
 import Posts from '../../components/common/Posts';
 import ProfileHeaderSkeleton from '../../components/skeletons/ProfileHeaderSkeleton';
 import EditProfileModal from './EditProfileModal';
 
-import { POSTS } from '../../utils/dummy';
-
 import { FaArrowLeft } from 'react-icons/fa6';
 import { IoCalendarOutline } from 'react-icons/io5';
 import { FaLink } from 'react-icons/fa';
 import { MdEdit } from 'react-icons/md';
-import { useQuery } from '@tanstack/react-query';
+
+import { apiRequest, normalizeUser } from '../../utils/api';
 
 const ProfilePage = () => {
-
+  const { username } = useParams();
   const [coverImg, setCoverImg] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
+  const [coverImgFile, setCoverImgFile] = useState(null);
+  const [profileImgFile, setProfileImgFile] = useState(null);
   const [feedType, setFeedType] = useState('posts');
 
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
+  const queryClient = useQueryClient();
 
-  const isLoading = false;
-  const isMyProfile = true;
+  const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['profile', username],
+    queryFn: async () => normalizeUser(await apiRequest(`/api/user/profile/${username}`)),
+    enabled: Boolean(username),
+  });
 
-  const user = {
-    _id: '1',
-    fullName: 'John Doe',
-    username: 'johndoe',
-    profileImg: '/avatars/boy2.png',
-    coverImg: '/cover.png',
-    bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    link: 'https://youtube.com/@asaprogrammer_',
-    following: ['1', '2', '3'],
-    followers: ['1', '2', '3'],
-  };
+  const isMyProfile = authUser?.username === user?.username || authUser?._id === user?._id;
+  const isFollowing = authUser?.following?.some((id) => id?.toString() === user?._id?.toString());
 
   const handleImgChange = (e, state) => {
     const file = e.target.files[0];
-    if (file) {
+    if (!file) return;
+
+    if (state === 'coverImg') {
+      setCoverImgFile(file);
       const reader = new FileReader();
-      reader.onload = () => {
-        state === 'coverImg' && setCoverImg(reader.result);
-        state === 'profileImg' && setProfileImg(reader.result);
-      };
+      reader.onload = () => setCoverImg(reader.result);
       reader.readAsDataURL(file);
+      return;
     }
+
+    setProfileImgFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setProfileImg(reader.result);
+    reader.readAsDataURL(file);
   };
+
+  const { mutate: followUser, isPending: isFollowPending } = useMutation({
+    mutationFn: async () => apiRequest(`/api/user/follow/${user._id}`, { method: 'POST' }),
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(['authUser'], (prev) =>
+        prev ? { ...prev, following: updatedUser.following || prev.following } : prev,
+      );
+      queryClient.setQueryData(['profile', username], (prev) => {
+        if (!prev) return prev;
+
+        const nextFollowers = isFollowing
+          ? (prev.followers || []).filter((id) => id?.toString() !== authUser?._id?.toString())
+          : [...(prev.followers || []), authUser?._id];
+
+        return { ...prev, followers: nextFollowers };
+      });
+      queryClient.invalidateQueries({ queryKey: ['suggestedUsers'] });
+      toast.success(isFollowing ? 'User unfollowed successfully' : 'User followed successfully');
+    },
+    onError: (error) => toast.error(error.message),
+  });
 
   return (
     <>
-      <div className="flex-[4_4_0]  border-r border-gray-700 min-h-screen ">
-        {/* HEADER */}
+      <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
         {isLoading && <ProfileHeaderSkeleton />}
-        {!isLoading && !user && (
+        {!isLoading && !user && !isError && (
           <p className="text-center text-lg mt-4">User not found</p>
         )}
+        {isError && <p className="text-center text-red-500 mt-4">{error.message}</p>}
         <div className="flex flex-col">
           {!isLoading && user && (
             <>
@@ -66,12 +97,9 @@ const ProfilePage = () => {
                 </Link>
                 <div className="flex flex-col">
                   <p className="font-bold text-lg">{user?.fullName}</p>
-                  <span className="text-sm text-slate-500">
-                    {POSTS?.length} posts
-                  </span>
+                  <span className="text-sm text-slate-500">0 posts</span>
                 </div>
               </div>
-              {/* COVER IMG */}
               <div className="relative group/cover">
                 <img
                   src={coverImg || user?.coverImg || '/cover.png'}
@@ -87,55 +115,30 @@ const ProfilePage = () => {
                   </div>
                 )}
 
-                <input
-                  type="file"
-                  hidden
-                  ref={coverImgRef}
-                  onChange={(e) => handleImgChange(e, 'coverImg')}
-                />
-                <input
-                  type="file"
-                  hidden
-                  ref={profileImgRef}
-                  onChange={(e) => handleImgChange(e, 'profileImg')}
-                />
-                {/* USER AVATAR */}
+                <input type="file" hidden ref={coverImgRef} onChange={(e) => handleImgChange(e, 'coverImg')} />
+                <input type="file" hidden ref={profileImgRef} onChange={(e) => handleImgChange(e, 'profileImg')} />
                 <div className="avatar absolute -bottom-16 left-4">
                   <div className="w-32 rounded-full relative group/avatar">
-                    <img
-                      src={
-                        profileImg ||
-                        user?.profileImg ||
-                        '/avatar-placeholder.png'
-                      }
-                    />
+                    <img src={profileImg || user?.profileImg || '/avatar-placeholder.png'} />
                     <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
                       {isMyProfile && (
-                        <MdEdit
-                          className="w-4 h-4 text-white"
-                          onClick={() => profileImgRef.current.click()}
-                        />
+                        <MdEdit className="w-4 h-4 text-white" onClick={() => profileImgRef.current.click()} />
                       )}
                     </div>
                   </div>
                 </div>
               </div>
               <div className="flex justify-end px-4 mt-5">
-                {isMyProfile && <EditProfileModal />}
+                {isMyProfile && (
+                  <EditProfileModal user={user} coverImgFile={coverImgFile} profileImgFile={profileImgFile} />
+                )}
                 {!isMyProfile && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
-                    onClick={() => alert('Followed successfully')}
+                    onClick={() => followUser()}
+                    disabled={isFollowPending}
                   >
-                    Follow
-                  </button>
-                )}
-                {(coverImg || profileImg) && (
-                  <button
-                    className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => alert('Profile updated successfully')}
-                  >
-                    Update
+                    {isFollowPending ? 'Please wait...' : isFollowing ? 'Unfollow' : 'Follow'}
                   </button>
                 )}
               </div>
@@ -143,46 +146,36 @@ const ProfilePage = () => {
               <div className="flex flex-col gap-4 mt-14 px-4">
                 <div className="flex flex-col">
                   <span className="font-bold text-lg">{user?.fullName}</span>
-                  <span className="text-sm text-slate-500">
-                    @{user?.username}
-                  </span>
+                  <span className="text-sm text-slate-500">@{user?.username}</span>
                   <span className="text-sm my-1">{user?.bio}</span>
                 </div>
 
                 <div className="flex gap-2 flex-wrap">
                   {user?.link && (
-                    <div className="flex gap-1 items-center ">
-                      <>
-                        <FaLink className="w-3 h-3 text-slate-500" />
-                        <a
-                          href="https://youtube.com/@asaprogrammer_"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-blue-500 hover:underline"
-                        >
-                          youtube.com/@asaprogrammer_
-                        </a>
-                      </>
+                    <div className="flex gap-1 items-center">
+                      <FaLink className="w-3 h-3 text-slate-500" />
+                      <a
+                        href={user.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-blue-500 hover:underline"
+                      >
+                        {user.link}
+                      </a>
                     </div>
                   )}
                   <div className="flex gap-2 items-center">
                     <IoCalendarOutline className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm text-slate-500">
-                      Joined July 2021
-                    </span>
+                    <span className="text-sm text-slate-500">Joined {new Date(user?.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <div className="flex gap-1 items-center">
-                    <span className="font-bold text-xs">
-                      {user?.following.length}
-                    </span>
+                    <span className="font-bold text-xs">{user?.following?.length || 0}</span>
                     <span className="text-slate-500 text-xs">Following</span>
                   </div>
                   <div className="flex gap-1 items-center">
-                    <span className="font-bold text-xs">
-                      {user?.followers.length}
-                    </span>
+                    <span className="font-bold text-xs">{user?.followers?.length || 0}</span>
                     <span className="text-slate-500 text-xs">Followers</span>
                   </div>
                 </div>
@@ -193,27 +186,24 @@ const ProfilePage = () => {
                   onClick={() => setFeedType('posts')}
                 >
                   Posts
-                  {feedType === 'posts' && (
-                    <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />
-                  )}
+                  {feedType === 'posts' && <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />}
                 </div>
                 <div
                   className="flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer"
                   onClick={() => setFeedType('likes')}
                 >
                   Likes
-                  {feedType === 'likes' && (
-                    <div className="absolute bottom-0 w-10  h-1 rounded-full bg-primary" />
-                  )}
+                  {feedType === 'likes' && <div className="absolute bottom-0 w-10 h-1 rounded-full bg-primary" />}
                 </div>
               </div>
             </>
           )}
 
-          <Posts />
+          <Posts feedType={feedType === 'likes' ? 'likes' : 'user'} username={user?.username} userId={user?._id} />
         </div>
       </div>
     </>
   );
 };
+
 export default ProfilePage;

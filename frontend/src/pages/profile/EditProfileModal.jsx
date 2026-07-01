@@ -1,107 +1,158 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-hot-toast';
 
-const EditProfileModal = () => {
-	const [formData, setFormData] = useState({
-		fullName: "",
-		username: "",
-		email: "",
-		bio: "",
-		link: "",
-		newPassword: "",
-		currentPassword: "",
-	});
+import { apiRequest } from '../../utils/api';
 
-	const handleInputChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
-	};
+const EditProfileModal = ({ user, coverImgFile, profileImgFile }) => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    username: '',
+    email: '',
+    bio: '',
+    link: '',
+    newPassword: '',
+    currentPassword: '',
+  });
 
-	return (
-		<>
-			<button
-				className='btn btn-outline rounded-full btn-sm'
-				onClick={() => document.getElementById("edit_profile_modal").showModal()}
-			>
-				Edit profile
-			</button>
-			<dialog id='edit_profile_modal' className='modal'>
-				<div className='modal-box border rounded-md border-gray-700 shadow-md'>
-					<h3 className='font-bold text-lg my-3'>Update Profile</h3>
-					<form
-						className='flex flex-col gap-4'
-						onSubmit={(e) => {
-							e.preventDefault();
-							alert("Profile updated successfully");
-						}}
-					>
-						<div className='flex flex-wrap gap-2'>
-							<input
-								type='text'
-								placeholder='Full Name'
-								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.fullName}
-								name='fullName'
-								onChange={handleInputChange}
-							/>
-							<input
-								type='text'
-								placeholder='Username'
-								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.username}
-								name='username'
-								onChange={handleInputChange}
-							/>
-						</div>
-						<div className='flex flex-wrap gap-2'>
-							<input
-								type='email'
-								placeholder='Email'
-								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.email}
-								name='email'
-								onChange={handleInputChange}
-							/>
-							<textarea
-								placeholder='Bio'
-								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.bio}
-								name='bio'
-								onChange={handleInputChange}
-							/>
-						</div>
-						<div className='flex flex-wrap gap-2'>
-							<input
-								type='password'
-								placeholder='Current Password'
-								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.currentPassword}
-								name='currentPassword'
-								onChange={handleInputChange}
-							/>
-							<input
-								type='password'
-								placeholder='New Password'
-								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.newPassword}
-								name='newPassword'
-								onChange={handleInputChange}
-							/>
-						</div>
-						<input
-							type='text'
-							placeholder='Link'
-							className='flex-1 input border border-gray-700 rounded p-2 input-md'
-							value={formData.link}
-							name='link'
-							onChange={handleInputChange}
-						/>
-						<button className='btn btn-primary rounded-full btn-sm text-white'>Update</button>
-					</form>
-				</div>
-				<form method='dialog' className='modal-backdrop'>
-					<button className='outline-none'>close</button>
-				</form>
-			</dialog>
-		</>
-	);
+  const queryClient = useQueryClient();
+
+  const handleOpenModal = () => {
+    if (!user) return;
+
+    setFormData({
+      fullName: user.fullName || '',
+      username: user.username || user.userName || '',
+      email: user.email || '',
+      bio: user.bio || '',
+      link: user.link || '',
+      newPassword: '',
+      currentPassword: '',
+    });
+
+    document.getElementById('edit_profile_modal')?.showModal();
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const { mutate: updateProfile, isPending } = useMutation({
+    mutationFn: async (payload) => {
+      const formDataToSend = new FormData();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        if (value) formDataToSend.append(key, value);
+      });
+
+      if (profileImgFile) formDataToSend.append('profileImg', profileImgFile);
+      if (coverImgFile) formDataToSend.append('coverImg', coverImgFile);
+
+      return apiRequest('/api/user/update', {
+        method: 'PUT',
+        body: formDataToSend,
+      });
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(['authUser'], updatedUser);
+      queryClient.setQueryData(['profile', user?.username], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast.success('Profile updated successfully');
+      document.getElementById('edit_profile_modal')?.close();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  return (
+    <>
+      <button
+        className="btn btn-outline rounded-full btn-sm"
+        onClick={handleOpenModal}
+      >
+        Edit profile
+      </button>
+      <dialog id="edit_profile_modal" className="modal">
+        <div className="modal-box border rounded-md border-gray-700 shadow-md">
+          <h3 className="font-bold text-lg my-3">Update Profile</h3>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateProfile(formData);
+            }}
+          >
+            <div className="flex flex-wrap gap-2">
+              <input
+                type="text"
+                placeholder="Full Name"
+                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                value={formData.fullName}
+                name="fullName"
+                onChange={handleInputChange}
+              />
+              <input
+                type="text"
+                placeholder="Username"
+                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                value={formData.username}
+                name="username"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <input
+                type="email"
+                placeholder="Email"
+                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                value={formData.email}
+                name="email"
+                onChange={handleInputChange}
+              />
+              <textarea
+                placeholder="Bio"
+                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                value={formData.bio}
+                name="bio"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <input
+                type="password"
+                placeholder="Current Password"
+                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                value={formData.currentPassword}
+                name="currentPassword"
+                onChange={handleInputChange}
+              />
+              <input
+                type="password"
+                placeholder="New Password"
+                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                value={formData.newPassword}
+                name="newPassword"
+                onChange={handleInputChange}
+              />
+            </div>
+            <input
+              type="text"
+              placeholder="Link"
+              className="flex-1 input border border-gray-700 rounded p-2 input-md"
+              value={formData.link}
+              name="link"
+              onChange={handleInputChange}
+            />
+            <button className="btn btn-primary rounded-full btn-sm text-white" disabled={isPending}>
+              {isPending ? 'Updating...' : 'Update'}
+            </button>
+          </form>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button className="outline-none">close</button>
+        </form>
+      </dialog>
+    </>
+  );
 };
+
 export default EditProfileModal;

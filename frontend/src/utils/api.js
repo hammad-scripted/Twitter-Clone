@@ -12,8 +12,8 @@ export const unwrapApiResponse = async (res, { emptyOn404 = false } = {}) => {
   return data?.data;
 };
 
-export const apiRequest = async (url, options, config) => {
-  const res = await fetch(url, options);
+export const apiRequest = async (url, options = {}, config) => {
+  const res = await fetch(url, { credentials: 'include', ...options });
   return unwrapApiResponse(res, config);
 };
 
