@@ -8,7 +8,13 @@ import { useImageVersion } from '../../hooks/useImageVersion';
 
 import { IoSettingsOutline } from 'react-icons/io5';
 import { FaUser } from 'react-icons/fa';
-import { FaHeart } from 'react-icons/fa6';
+import { FaHeart, FaRegComment } from 'react-icons/fa6';
+
+const notificationText = {
+  follow: 'followed you',
+  like: 'liked your post',
+  comment: 'commented on your post',
+};
 
 const NotificationPage = () => {
   const queryClient = useQueryClient();
@@ -71,6 +77,7 @@ const NotificationPage = () => {
               <div className="flex gap-2 p-4">
                 {notification.type === 'follow' && <FaUser className="w-7 h-7 text-primary" />}
                 {notification.type === 'like' && <FaHeart className="w-7 h-7 text-red-500" />}
+                {notification.type === 'comment' && <FaRegComment className="w-7 h-7 text-sky-400" />}
                 <Link to={`/profile/${senderUsername}`} className="flex gap-2 items-center">
                   <div className="avatar">
                     <div className="w-8 rounded-full">
@@ -79,7 +86,7 @@ const NotificationPage = () => {
                   </div>
                   <div className="flex gap-1">
                     <span className="font-bold">@{senderUsername}</span>{' '}
-                    {notification.type === 'follow' ? 'followed you' : 'liked your post'}
+                    {notificationText[notification.type] || 'interacted with you'}
                   </div>
                 </Link>
               </div>

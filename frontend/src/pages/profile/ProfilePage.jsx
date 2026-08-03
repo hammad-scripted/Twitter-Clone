@@ -24,6 +24,7 @@ const ProfilePage = () => {
   const [feedType, setFeedType] = useState('posts');
   const [imageVersion, setImageVersion] = useState(0);
   const [profileData, setProfileData] = useState(null);
+  const [postCount, setPostCount] = useState(0);
 
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
@@ -121,7 +122,9 @@ const ProfilePage = () => {
                 </Link>
                 <div className="flex flex-col">
                   <p className="font-bold text-lg">{user?.fullName}</p>
-                  <span className="text-sm text-slate-500">0 posts</span>
+                  <span className="text-sm text-slate-500">
+                    {postCount} {postCount === 1 ? 'post' : 'posts'}
+                  </span>
                 </div>
               </div>
               <div className="relative group/cover">
@@ -232,7 +235,12 @@ const ProfilePage = () => {
             </>
           )}
 
-          <Posts feedType={feedType === 'likes' ? 'likes' : 'user'} username={profileUser?.username} userId={profileUser?._id} />
+          <Posts
+            feedType={feedType === 'likes' ? 'likes' : 'user'}
+            username={profileUser?.username}
+            userId={profileUser?._id}
+            onCountChange={feedType === 'likes' ? undefined : setPostCount}
+          />
         </div>
       </div>
     </>

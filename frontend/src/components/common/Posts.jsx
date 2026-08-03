@@ -1,10 +1,11 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import Post from './Post';
 import PostSkeleton from '../skeletons/PostSkeleton';
 import { apiRequest, normalizePosts } from '../../utils/api';
 
-const Posts = ({ feedType = 'forYou', username, userId }) => {
+const Posts = ({ feedType = 'forYou', username, userId, onCountChange }) => {
   const getPostsEndpoint = () => {
     if (feedType === 'following') return '/api/posts/following';
     if (feedType === 'user') return `/api/posts/user/${username}`;
@@ -25,6 +26,12 @@ const Posts = ({ feedType = 'forYou', username, userId }) => {
       ),
     enabled: (feedType === 'user' ? Boolean(username) : true) && (feedType !== 'likes' || Boolean(userId)),
   });
+
+  useEffect(() => {
+    if (!isLoading && !isError) {
+      onCountChange?.(posts.length);
+    }
+  }, [posts.length, isLoading, isError, onCountChange]);
 
   return (
     <>
