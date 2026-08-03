@@ -9,10 +9,11 @@ const postSchema = new Schema(
     },
     text: {
       type: String,
-      required: true,
+      default: '',
     },
     Img: {
       type: String,
+      default: '',
     },
     ImgId: {
       type: String,

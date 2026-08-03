@@ -23,13 +23,20 @@ export const login = async (req, res, next) => {
   }
   generateTokenAndSetCookie(user._id, res);
 
+  const safeUser = user.toObject();
+  delete safeUser.password;
+
   return res
     .status(StatusCodes.OK)
-    .json(new ApiResponse(StatusCodes.OK, user, 'Logged in successfully'));
+    .json(new ApiResponse(StatusCodes.OK, safeUser, 'Logged in successfully'));
 };
 
 export const logout = async (req, res, next) => {
-  res.clearCookie('jwt');
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
   return res
     .status(StatusCodes.OK)
     .json(new ApiResponse(StatusCodes.OK, null, 'Logged out successfully'));
@@ -54,17 +61,18 @@ export const signup = async (req, res, next) => {
     password,
   });
 
-  if (newUser) {
-    generateTokenAndSetCookie(newUser._id, res);
-  }
   await newUser.save();
+  generateTokenAndSetCookie(newUser._id, res);
+
+  const safeUser = newUser.toObject();
+  delete safeUser.password;
 
   return res
     .status(StatusCodes.CREATED)
     .json(
       new ApiResponse(
         StatusCodes.CREATED,
-        newUser,
+        safeUser,
         'User created successfully',
       ),
     );

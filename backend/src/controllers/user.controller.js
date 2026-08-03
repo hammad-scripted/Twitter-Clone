@@ -57,19 +57,16 @@ export const followUnfollowUser = async (req, res, next) => {
 
     await currentUser.save();
     await userToModify.save();
-    const notification = new Notification({
-      from: currentUser._id,
-      to: userToModify._id,
-      type: 'unfollow',
-      read: false,
-    });
-    await notification.save();
+
+    const safeUser = currentUser.toObject();
+    delete safeUser.password;
+
     return res
       .status(StatusCodes.OK)
       .json(
         new ApiResponse(
           StatusCodes.OK,
-          currentUser,
+          safeUser,
           'User unfollowed successfully',
         ),
       );
@@ -88,12 +85,16 @@ export const followUnfollowUser = async (req, res, next) => {
     read: false,
   });
   await notification.save();
+
+  const safeUser = currentUser.toObject();
+  delete safeUser.password;
+
   return res
     .status(StatusCodes.OK)
     .json(
       new ApiResponse(
         StatusCodes.OK,
-        currentUser,
+        safeUser,
         'User followed successfully',
       ),
     );

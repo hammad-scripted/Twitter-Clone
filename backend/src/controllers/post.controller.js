@@ -131,10 +131,16 @@ export const commentOnPost = async (req, res, next) => {
 
   await post.save();
 
-  await post.populate({
-    path: 'comments.user',
-    select: '-password',
-  });
+  if (post.user.toString() !== userId.toString()) {
+    await Notification.create({
+      from: userId,
+      to: post.user,
+      post: post._id,
+      type: 'comment',
+    });
+  }
+
+  await post.populate(postPopulateOptions);
 
   return res
     .status(StatusCodes.OK)
@@ -208,12 +214,6 @@ export const getAllPosts = async (req, res, next) => {
   const posts = await Post.find()
     .sort({ createdAt: -1 })
     .populate(postPopulateOptions);
-
-  if (posts.length === 0) {
-    return next(
-      new ApiError(StatusCodes.NOT_FOUND, 'No posts found'),
-    );
-  }
 
   return res
     .status(StatusCodes.OK)

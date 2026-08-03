@@ -10,21 +10,19 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import { Toaster } from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
 import { getAuthUser } from './utils/api';
-const AppLayout = ({ children, rightPanelLoading = false }) => {
+
+const AppLayout = ({ children }) => {
   return (
     <div className="flex max-w-6xl mx-auto">
       <Sidebar />
       {children}
-      <RightPanel isLoading={rightPanelLoading} />
+      <RightPanel />
     </div>
   );
 };
 
 function App() {
-  const {
-    data: authUser,
-    isLoading,
-  } = useQuery({
+  const { data: authUser, isLoading } = useQuery({
     queryKey: ['authUser'],
     queryFn: getAuthUser,
     retry: false,
@@ -33,11 +31,11 @@ function App() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        {' '}
         <LoadingSpinner size="lg" />
       </div>
     );
   }
+
   return (
     <>
       <Routes>
@@ -57,9 +55,10 @@ function App() {
           path="/notifications"
           element={
             authUser ? (
-            <AppLayout>
-              <NotificationPage />
-            </AppLayout>): (
+              <AppLayout>
+                <NotificationPage />
+              </AppLayout>
+            ) : (
               <Navigate to="/login" replace />
             )
           }
@@ -78,28 +77,13 @@ function App() {
         />
         <Route
           path="/signup"
-          element={
-            !authUser ? (
-              <AppLayout>
-                <SignUpPage />
-              </AppLayout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
+          element={!authUser ? <SignUpPage /> : <Navigate to="/" replace />}
         />
         <Route
           path="/login"
-          element={
-            !authUser ? (
-              <AppLayout rightPanelLoading>
-                <LoginPage />
-              </AppLayout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
+          element={!authUser ? <LoginPage /> : <Navigate to="/" replace />}
         />
+        <Route path="*" element={<Navigate to={authUser ? '/' : '/login'} replace />} />
       </Routes>
       <Toaster position="top-right" />
     </>

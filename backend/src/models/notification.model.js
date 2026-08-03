@@ -12,10 +12,14 @@ const notificationSchema = new Schema(
       ref: 'User',
       required: true,
     },
+    post: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    },
     type: {
       type: String,
       required: true,
-      enum: ['like', 'follow', 'unfollow', 'comment', 'unlike'],
+      enum: ['like', 'follow', 'comment'],
     },
     read: {
       type: Boolean,
