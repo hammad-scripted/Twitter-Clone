@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { FaRegComment, FaRegHeart, FaTrash } from 'react-icons/fa';
+import { FaRegComment, FaRegHeart, FaHeart, FaTrash } from 'react-icons/fa';
 import { BiRepost } from 'react-icons/bi';
 import { FaRegBookmark } from 'react-icons/fa6';
 
@@ -51,7 +51,7 @@ const Post = ({ post }) => {
     onError: (error) => toast.error(error.message),
   });
 
-  const { mutate: likePost } = useMutation({
+  const { mutate: likePost, isPending: isLiking } = useMutation({
     mutationFn: async () =>
       apiRequest(`/api/posts/like/${post._id}`, { method: 'POST' }),
     onSuccess: invalidatePosts,
@@ -78,13 +78,17 @@ const Post = ({ post }) => {
   };
 
   return (
-    <div className="flex gap-2 items-start p-4 border-b border-gray-700">
+    <div className="flex gap-3 items-start p-4 border-b border-gray-700 hover:bg-white/[0.03] transition-colors">
       <div className="avatar">
         <Link
           to={`/profile/${postOwner.username}`}
-          className="w-8 rounded-full overflow-hidden"
+          className="w-10 h-10 rounded-full overflow-hidden block"
         >
-          <img src={getImageUrl(postOwner?.profileImg, imageVersion)} />
+          <img
+            src={getImageUrl(postOwner?.profileImg, imageVersion)}
+            className="w-full h-full object-cover"
+            alt={postOwner?.fullName}
+          />
         </Link>
       </div>
       <div className="flex flex-col flex-1">
@@ -109,12 +113,12 @@ const Post = ({ post }) => {
           )}
         </div>
         <div className="flex flex-col gap-3 overflow-hidden">
-          <span>{post.text}</span>
+          {post.text && <span className="whitespace-pre-wrap break-words">{post.text}</span>}
           {post.img && (
             <img
               src={post.img}
-              className="h-80 object-contain rounded-lg border border-gray-700"
-              alt=""
+              className="w-full max-h-[32rem] object-cover rounded-2xl border border-gray-700"
+              alt="post"
             />
           )}
         </div>
@@ -147,9 +151,11 @@ const Post = ({ post }) => {
                   {post.comments.map((comment) => (
                     <div key={comment._id} className="flex gap-2 items-start">
                       <div className="avatar">
-                        <div className="w-8 rounded-full">
+                        <div className="w-8 h-8 rounded-full overflow-hidden">
                           <img
                             src={getImageUrl(comment.user?.profileImg, imageVersion)}
+                            className="w-full h-full object-cover"
+                            alt={comment.user?.fullName}
                           />
                         </div>
                       </div>
@@ -200,23 +206,25 @@ const Post = ({ post }) => {
                 0
               </span>
             </div>
-            <div
-              className="flex gap-1 items-center group cursor-pointer"
+            <button
+              type="button"
+              className="flex gap-1 items-center group cursor-pointer disabled:opacity-60"
               onClick={() => likePost()}
+              disabled={isLiking}
             >
-              <FaRegHeart
-                className={`w-4 h-4 cursor-pointer group-hover:text-pink-500 ${
-                  isLiked ? 'text-pink-500' : 'text-slate-500'
-                }`}
-              />
+              {isLiked ? (
+                <FaHeart className="w-4 h-4 text-pink-500" />
+              ) : (
+                <FaRegHeart className="w-4 h-4 text-slate-500 group-hover:text-pink-500" />
+              )}
               <span
-                className={`text-sm text-slate-500 group-hover:text-pink-500 ${
-                  isLiked ? 'text-pink-500' : ''
+                className={`text-sm group-hover:text-pink-500 ${
+                  isLiked ? 'text-pink-500' : 'text-slate-500'
                 }`}
               >
                 {post.likes.length}
               </span>
-            </div>
+            </button>
           </div>
           <div className="flex w-1/3 justify-end gap-2 items-center">
             <FaRegBookmark className="w-4 h-4 text-slate-500 cursor-pointer" />

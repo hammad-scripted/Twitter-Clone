@@ -43,8 +43,12 @@ const RightPanel = ({ isLoading = false }) => {
               <div className="flex items-center justify-between gap-4" key={user._id}>
                 <Link to={`/profile/${user.username}`} className="flex gap-2 items-center flex-1">
                   <div className="avatar">
-                    <div className="w-8 rounded-full">
-                      <img src={getImageUrl(user?.profileImg, imageVersion)} />
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                      <img
+                        src={getImageUrl(user?.profileImg, imageVersion)}
+                        className="w-full h-full object-cover"
+                        alt={user?.fullName}
+                      />
                     </div>
                   </div>
                   <div className="flex flex-col">

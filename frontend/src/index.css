@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* Prevent layout shift when scrollbars appear/disappear */
+    overflow-y: scroll;
+  }
+}
+
+@layer components {
+  /* Frosted-glass sticky header used across feed/profile/notifications */
+  .glass-header {
+    @apply sticky top-0 z-10 backdrop-blur-md bg-black/60 border-b border-gray-700;
+  }
+
+  /* Subtle press feedback for interactive icon rows */
+  .tab-underline {
+    @apply absolute bottom-0 h-1 w-10 rounded-full bg-primary;
+  }
+}
+
+/* Custom slim scrollbar (webkit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(113, 118, 123, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 118, 123, 0.7);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(113, 118, 123, 0.4) transparent;
+}

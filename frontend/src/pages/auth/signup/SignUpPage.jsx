@@ -42,7 +42,6 @@ const SignUpPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     mutate(formData);
-    console.log(formData);
   };
 
   const handleInputChange = (e) => {
@@ -70,6 +69,8 @@ const SignUpPage = () => {
               name="email"
               onChange={handleInputChange}
               value={formData.email}
+              autoComplete="email"
+              required
             />
           </label>
           <div className="flex gap-4 flex-wrap">
@@ -82,6 +83,8 @@ const SignUpPage = () => {
                 name="username"
                 onChange={handleInputChange}
                 value={formData.username}
+                autoComplete="username"
+                required
               />
             </label>
             <label className="input input-bordered rounded flex items-center gap-2 flex-1">
@@ -93,6 +96,8 @@ const SignUpPage = () => {
                 name="fullName"
                 onChange={handleInputChange}
                 value={formData.fullName}
+                autoComplete="name"
+                required
               />
             </label>
           </div>
@@ -105,9 +110,14 @@ const SignUpPage = () => {
               name="password"
               onChange={handleInputChange}
               value={formData.password}
+              autoComplete="new-password"
+              required
             />
           </label>
-          <button className="btn rounded-full btn-primary text-white">
+          <button
+            className="btn rounded-full btn-primary text-white"
+            disabled={isPending}
+          >
             {isPending ? 'Loading...' : 'Sign up'}
           </button>
           {isError && <p className="text-red-500">{error.message}</p>}

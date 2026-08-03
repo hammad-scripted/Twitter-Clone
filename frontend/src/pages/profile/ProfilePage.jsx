@@ -146,16 +146,24 @@ const ProfilePage = () => {
                 <input type="file" hidden ref={coverImgRef} onChange={(e) => handleImgChange(e, 'coverImg')} />
                 <input type="file" hidden ref={profileImgRef} onChange={(e) => handleImgChange(e, 'profileImg')} />
                 <div className="avatar absolute -bottom-16 left-4">
-                  <div className="w-32 rounded-full relative group/avatar">
-                    <img
-                      key={`profile-${imageVersion}-${profileUser?.profileImg || ''}`}
-                      src={getDisplayImageUrl(resolvedProfileImg || '/avatar-placeholder.png')}
-                    />
-                    <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
-                      {isMyProfile && (
-                        <MdEdit className="w-4 h-4 text-white" onClick={() => profileImgRef.current.click()} />
-                      )}
+                  <div className="w-32 h-32 rounded-full relative group/avatar border-4 border-black">
+                    <div className="w-full h-full rounded-full overflow-hidden">
+                      <img
+                        key={`profile-${imageVersion}-${profileUser?.profileImg || ''}`}
+                        src={getDisplayImageUrl(resolvedProfileImg || '/avatar-placeholder.png')}
+                        className="w-full h-full object-cover"
+                        alt={profileUser?.fullName}
+                      />
                     </div>
+                    {isMyProfile && (
+                      <button
+                        type="button"
+                        className="absolute bottom-1 right-1 p-2 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 transition-opacity cursor-pointer"
+                        onClick={() => profileImgRef.current.click()}
+                      >
+                        <MdEdit className="w-4 h-4 text-white" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

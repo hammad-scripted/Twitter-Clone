@@ -70,8 +70,12 @@ const Sidebar = () => {
             className="mt-auto mb-10 flex gap-2 items-start transition-all duration-300 hover:bg-[#181818] py-2 px-4 rounded-full"
           >
             <div className="avatar hidden md:inline-flex">
-              <div className="w-8 rounded-full">
-                <img src={getImageUrl(data?.profileImg, imageVersion)} />
+              <div className="w-8 h-8 rounded-full overflow-hidden">
+                <img
+                  src={getImageUrl(data?.profileImg, imageVersion)}
+                  className="w-full h-full object-cover"
+                  alt={data?.fullName}
+                />
               </div>
             </div>
             <div className="flex justify-between flex-1">

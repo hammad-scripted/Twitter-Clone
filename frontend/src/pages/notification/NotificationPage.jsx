@@ -42,8 +42,8 @@ const NotificationPage = () => {
   return (
     <>
       <div className="flex-[4_4_0] border-l border-r border-gray-700 min-h-screen">
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <p className="font-bold">Notifications</p>
+        <div className="glass-header flex justify-between items-center p-4">
+          <p className="font-bold text-lg">Notifications</p>
           <div className="dropdown">
             <div tabIndex={0} role="button" className="m-1">
               <IoSettingsOutline className="w-4" />
@@ -73,15 +73,19 @@ const NotificationPage = () => {
           const senderUser = normalizeUser(notification.from);
           const senderUsername = senderUser?.username;
           return (
-            <div className="border-b border-gray-700" key={notification._id}>
-              <div className="flex gap-2 p-4">
+            <div className="border-b border-gray-700 hover:bg-white/[0.03] transition-colors" key={notification._id}>
+              <div className="flex gap-2 p-4 items-center">
                 {notification.type === 'follow' && <FaUser className="w-7 h-7 text-primary" />}
                 {notification.type === 'like' && <FaHeart className="w-7 h-7 text-red-500" />}
                 {notification.type === 'comment' && <FaRegComment className="w-7 h-7 text-sky-400" />}
                 <Link to={`/profile/${senderUsername}`} className="flex gap-2 items-center">
                   <div className="avatar">
-                    <div className="w-8 rounded-full">
-                      <img src={getImageUrl(senderUser?.profileImg, imageVersion)} />
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                      <img
+                        src={getImageUrl(senderUser?.profileImg, imageVersion)}
+                        className="w-full h-full object-cover"
+                        alt={senderUsername}
+                      />
                     </div>
                   </div>
                   <div className="flex gap-1">
