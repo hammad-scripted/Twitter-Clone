@@ -9,7 +9,7 @@ export const getNotifications = async (req, res, next) => {
     .sort({ createdAt: -1 })
     .populate({
       path: 'from',
-      select: 'userName profileImg',
+      select: 'fullName userName profileImg',
     });
 
   await Notification.updateMany({ to: userId }, { read: true });
@@ -21,6 +21,23 @@ export const getNotifications = async (req, res, next) => {
         StatusCodes.OK,
         notifications,
         'Notifications fetched successfully',
+      ),
+    );
+};
+
+export const getUnreadNotificationCount = async (req, res) => {
+  const count = await Notification.countDocuments({
+    to: req.user._id,
+    read: false,
+  });
+
+  return res
+    .status(StatusCodes.OK)
+    .json(
+      new ApiResponse(
+        StatusCodes.OK,
+        { count },
+        'Unread notification count fetched successfully',
       ),
     );
 };

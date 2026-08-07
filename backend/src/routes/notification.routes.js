@@ -1,13 +1,16 @@
-import express from 'express';
-import {Router} from 'express'
+import { Router } from 'express';
+
+import {
+  deleteNotifications,
+  getNotifications,
+  getUnreadNotificationCount,
+} from '../controllers/notification.controller.js';
 import { protect } from '../middlewares/protect.js';
-import { getNotifications,deleteNotifications } from '../controllers/notification.controller.js';
-const router=Router()
 
+const router = Router();
 
-router.get("/",protect,getNotifications);
-router.delete("/",protect,deleteNotifications);
-
-
+router.get('/unread-count', protect, getUnreadNotificationCount);
+router.get('/', protect, getNotifications);
+router.delete('/', protect, deleteNotifications);
 
 export default router;

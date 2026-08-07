@@ -31,5 +31,8 @@ const notificationSchema = new Schema(
   },
 );
 
+notificationSchema.index({ to: 1, createdAt: -1 });
+notificationSchema.index({ to: 1, read: 1 });
+
 const Notification = model('Notification', notificationSchema);
 export default Notification;

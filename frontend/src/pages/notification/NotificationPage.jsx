@@ -27,13 +27,26 @@ const NotificationPage = () => {
     error,
   } = useQuery({
     queryKey: ['notifications'],
-    queryFn: async () => apiRequest('/api/notifications', undefined, { emptyOn404: true }),
+    queryFn: async () => {
+      const nextNotifications = await apiRequest(
+        '/api/notifications',
+        undefined,
+        { emptyOn404: true },
+      );
+
+      queryClient.setQueryData(['notificationUnreadCount'], { count: 0 });
+      return nextNotifications;
+    },
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    refetchInterval: 15_000,
   });
 
   const { mutate: deleteNotifications, isPending } = useMutation({
     mutationFn: async () => apiRequest('/api/notifications', { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.setQueryData(['notifications'], []);
+      queryClient.setQueryData(['notificationUnreadCount'], { count: 0 });
       toast.success('Notifications deleted');
     },
     onError: (error) => toast.error(error.message),

@@ -12,7 +12,14 @@ import { useImageVersion } from '../../hooks/useImageVersion';
 const Sidebar = () => {
   const queryClient = useQueryClient();
   const { data } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
+  const { data: unreadNotifications } = useQuery({
+    queryKey: ['notificationUnreadCount'],
+    queryFn: () => apiRequest('/api/notifications/unread-count'),
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
+  });
   const imageVersion = useImageVersion();
+  const unreadCount = unreadNotifications?.count || 0;
   const navClass = ({ isActive }) => `flex gap-3 items-center transition-all rounded-full py-2.5 px-3 max-w-fit hover:bg-white/[0.07] ${isActive ? 'font-bold text-white' : 'text-slate-300'}`;
 
   const { mutate: logout } = useMutation({
@@ -50,7 +57,14 @@ const Sidebar = () => {
               to="/notifications"
               className={navClass}
             >
-              <IoNotifications className="w-6 h-6" />
+              <span className="relative">
+                <IoNotifications className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-white">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </span>
               <span className="text-lg hidden md:block">Notifications</span>
             </NavLink>
           </li>
