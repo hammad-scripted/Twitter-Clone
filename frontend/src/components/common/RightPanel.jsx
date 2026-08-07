@@ -26,10 +26,11 @@ const RightPanel = ({ isLoading = false }) => {
   });
 
   return (
-    <div className="hidden lg:block my-4 mx-2">
-      <div className="bg-[#16181C] p-4 rounded-md sticky top-2">
-        <p className="font-bold">Who to follow</p>
-        <div className="flex flex-col gap-4">
+    <aside className="hidden lg:block my-4 mx-4 w-80 shrink-0">
+      <div className="bg-white/[0.045] border border-white/10 p-5 rounded-2xl sticky top-4 shadow-xl shadow-black/10">
+        <p className="font-extrabold text-xl tracking-tight">Who to follow</p>
+        <p className="mb-5 mt-1 text-sm text-slate-500">People you might enjoy</p>
+        <div className="flex flex-col gap-5">
           {(isLoading || isUsersLoading) && (
             <>
               <RightPanelSkeleton />
@@ -51,7 +52,7 @@ const RightPanel = ({ isLoading = false }) => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col min-w-0">
                     <span className="font-semibold tracking-tight truncate w-28">{user.fullName}</span>
                     <span className="text-sm text-slate-500">@{user.username}</span>
                   </div>
@@ -70,7 +71,7 @@ const RightPanel = ({ isLoading = false }) => {
             ))}
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

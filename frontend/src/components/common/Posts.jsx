@@ -46,7 +46,7 @@ const Posts = ({ feedType = 'forYou', username, userId, onCountChange }) => {
         <p className="text-center text-red-500 my-4">{error.message}</p>
       )}
       {!isLoading && !isError && posts?.length === 0 && (
-        <p className="text-center my-4">No posts in this tab.</p>
+        <div className="mx-auto max-w-sm px-6 py-16 text-center"><p className="text-xl font-bold">Nothing here yet</p><p className="mt-2 text-sm text-slate-500">When posts show up in this feed, you’ll see them here.</p></div>
       )}
       {!isLoading && !isError && posts && (
         <div>

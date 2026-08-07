@@ -49,18 +49,18 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto flex h-screen px-10">
+    <main className="max-w-6xl mx-auto flex min-h-screen px-5 py-10 sm:px-10">
       <div className="flex-1 hidden lg:flex items-center  justify-center">
         <XSvg className=" lg:w-2/3 fill-white" />
       </div>
       <div className="flex-1 flex flex-col justify-center items-center">
         <form
-          className="lg:w-2/3  mx-auto md:mx-20 flex gap-4 flex-col"
+          className="auth-card flex gap-4 flex-col"
           onSubmit={handleSubmit}
         >
-          <XSvg className="w-24 lg:hidden fill-white" />
-          <h1 className="text-4xl font-extrabold text-white">Join today.</h1>
-          <label className="input input-bordered rounded flex items-center gap-2">
+          <XSvg className="w-12 fill-white" />
+          <div><p className="text-sm font-semibold text-primary">JOIN THE CONVERSATION</p><h1 className="mt-1 text-4xl font-extrabold tracking-tight text-white">Create your account.</h1></div>
+          <label className="auth-input flex items-center gap-3">
             <MdOutlineMail />
             <input
               type="email"
@@ -74,7 +74,7 @@ const SignUpPage = () => {
             />
           </label>
           <div className="flex gap-4 flex-wrap">
-            <label className="input input-bordered rounded flex items-center gap-2 flex-1">
+            <label className="auth-input flex items-center gap-2 flex-1 min-w-40">
               <FaUser />
               <input
                 type="text"
@@ -87,7 +87,7 @@ const SignUpPage = () => {
                 required
               />
             </label>
-            <label className="input input-bordered rounded flex items-center gap-2 flex-1">
+            <label className="auth-input flex items-center gap-2 flex-1 min-w-40">
               <MdDriveFileRenameOutline />
               <input
                 type="text"
@@ -101,7 +101,7 @@ const SignUpPage = () => {
               />
             </label>
           </div>
-          <label className="input input-bordered rounded flex items-center gap-2">
+          <label className="auth-input flex items-center gap-3">
             <MdPassword />
             <input
               type="password"
@@ -115,23 +115,16 @@ const SignUpPage = () => {
             />
           </label>
           <button
-            className="btn rounded-full btn-primary text-white"
+            className="btn rounded-full border-0 bg-primary text-white shadow-lg shadow-primary/20 hover:bg-sky-500"
             disabled={isPending}
           >
             {isPending ? 'Loading...' : 'Sign up'}
           </button>
           {isError && <p className="text-red-500">{error.message}</p>}
+          <p className="text-center text-sm text-slate-400">Already have an account? <Link className="font-semibold text-primary hover:underline" to="/login">Sign in</Link></p>
         </form>
-        <div className="flex flex-col lg:w-2/3 gap-2 mt-4">
-          <p className="text-white text-lg">Already have an account?</p>
-          <Link to="/login">
-            <button className="btn rounded-full btn-primary text-white btn-outline w-full">
-              Sign in
-            </button>
-          </Link>
-        </div>
       </div>
-    </div>
+    </main>
   );
 };
 export default SignUpPage;
