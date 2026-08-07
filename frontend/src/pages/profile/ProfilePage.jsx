@@ -107,7 +107,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
+      <div className="min-w-0 flex-[4_4_0] border-r border-gray-700 min-h-screen">
         {isLoading && <ProfileHeaderSkeleton />}
         {!isLoading && !user && !isError && (
           <p className="text-center text-lg mt-4">User not found</p>
@@ -120,8 +120,8 @@ const ProfilePage = () => {
                 <Link to="/">
                   <FaArrowLeft className="w-4 h-4" />
                 </Link>
-                <div className="flex flex-col">
-                  <p className="font-bold text-lg">{user?.fullName}</p>
+                <div className="min-w-0 flex flex-col">
+                  <p className="truncate font-bold text-lg" title={user?.fullName}>{user?.fullName}</p>
                   <span className="text-sm text-slate-500">
                     {postCount} {postCount === 1 ? 'post' : 'posts'}
                   </span>
@@ -189,9 +189,9 @@ const ProfilePage = () => {
 
               <div className="flex flex-col gap-4 mt-14 px-4">
                 <div className="flex flex-col">
-                  <span className="font-bold text-lg">{profileUser?.fullName}</span>
-                  <span className="text-sm text-slate-500">@{profileUser?.username}</span>
-                  <span className="text-sm my-1">{profileUser?.bio}</span>
+                  <span className="break-words font-bold text-lg">{profileUser?.fullName}</span>
+                  <span className="break-all text-sm text-slate-500">@{profileUser?.username}</span>
+                  <span className="break-words text-sm my-1">{profileUser?.bio}</span>
                 </div>
 
                 <div className="flex gap-2 flex-wrap">
@@ -202,7 +202,7 @@ const ProfilePage = () => {
                         href={profileUser.link}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm text-blue-500 hover:underline"
+                        className="break-all text-sm text-blue-500 hover:underline"
                       >
                         {profileUser.link}
                       </a>

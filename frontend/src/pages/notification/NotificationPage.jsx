@@ -41,7 +41,7 @@ const NotificationPage = () => {
 
   return (
     <>
-      <div className="flex-[4_4_0] border-l border-r border-gray-700 min-h-screen">
+      <div className="min-w-0 flex-[4_4_0] border-l border-r border-gray-700 min-h-screen">
         <div className="glass-header flex justify-between items-center p-4">
           <p className="font-bold text-lg">Notifications</p>
           <div className="dropdown">
@@ -74,11 +74,11 @@ const NotificationPage = () => {
           const senderUsername = senderUser?.username;
           return (
             <div className="border-b border-gray-700 hover:bg-white/[0.03] transition-colors" key={notification._id}>
-              <div className="flex gap-2 p-4 items-center">
+              <div className="flex min-w-0 gap-2 p-4 items-center">
                 {notification.type === 'follow' && <FaUser className="w-7 h-7 text-primary" />}
                 {notification.type === 'like' && <FaHeart className="w-7 h-7 text-red-500" />}
                 {notification.type === 'comment' && <FaRegComment className="w-7 h-7 text-sky-400" />}
-                <Link to={`/profile/${senderUsername}`} className="flex gap-2 items-center">
+                <Link to={`/profile/${senderUsername}`} className="flex min-w-0 gap-2 items-center">
                   <div className="avatar">
                     <div className="w-8 h-8 rounded-full overflow-hidden">
                       <img
@@ -88,8 +88,8 @@ const NotificationPage = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <span className="font-bold">@{senderUsername}</span>{' '}
+                  <div className="flex min-w-0 gap-1">
+                    <span className="truncate font-bold">@{senderUsername}</span>{' '}
                     {notificationText[notification.type] || 'interacted with you'}
                   </div>
                 </Link>

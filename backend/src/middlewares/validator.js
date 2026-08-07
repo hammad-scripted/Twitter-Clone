@@ -7,7 +7,9 @@ const userValidationRules = () => {
     body('fullName')
       .trim()
       .notEmpty()
-      .withMessage('Full name is required'),
+      .withMessage('Full name is required')
+      .isLength({ max: 50 })
+      .withMessage('Full name must be 50 characters or fewer'),
 
     body('username')
       .trim()

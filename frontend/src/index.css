@@ -38,7 +38,8 @@
   .surface-border { @apply border-white/10; }
   .icon-button { @apply inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-primary/10 hover:text-primary disabled:opacity-50; }
   .auth-card { @apply w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-7 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-10; }
-  .auth-input { @apply input input-bordered h-12 rounded-xl border-white/10 bg-white/[0.04] transition focus-within:border-primary/70 focus-within:outline-none; }
+  .auth-input { @apply input input-bordered h-12 w-full min-w-0 rounded-xl border-white/10 bg-white/[0.04] transition focus-within:border-primary/70 focus-within:outline-none; }
+  .auth-input input { @apply w-full min-w-0; }
 }
 
 .app-toast { background: #161b22 !important; color: #f7f9f9 !important; border: 1px solid rgba(255,255,255,.1) !important; }

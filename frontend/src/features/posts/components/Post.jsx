@@ -91,13 +91,17 @@ const Post = ({ post }) => {
           />
         </Link>
       </div>
-      <div className="flex flex-col flex-1">
-        <div className="flex gap-2 items-center">
-          <Link to={`/profile/${postOwner.username}`} className="font-bold">
+      <div className="flex min-w-0 flex-col flex-1">
+        <div className="flex min-w-0 gap-2 items-center">
+          <Link
+            to={`/profile/${postOwner.username}`}
+            className="min-w-0 max-w-[45%] truncate font-bold"
+            title={postOwner.fullName}
+          >
             {postOwner.fullName}
           </Link>
-          <span className="min-w-0 text-slate-500 flex gap-1 text-sm">
-            <Link to={`/profile/${postOwner.username}`}>
+          <span className="min-w-0 flex flex-1 gap-1 overflow-hidden text-sm text-slate-500">
+            <Link className="truncate" to={`/profile/${postOwner.username}`}>
               @{postOwner.username}
             </Link>
             <span>·</span>
@@ -156,16 +160,16 @@ const Post = ({ post }) => {
                           />
                         </div>
                       </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-1">
-                          <span className="font-bold">
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <div className="flex min-w-0 items-center gap-1">
+                          <span className="max-w-[55%] truncate font-bold" title={comment.user.fullName}>
                             {comment.user.fullName}
                           </span>
-                          <span className="text-gray-700 text-sm">
+                          <span className="min-w-0 truncate text-gray-700 text-sm">
                             @{comment.user.username}
                           </span>
                         </div>
-                        <div className="text-sm">{comment.text}</div>
+                        <div className="break-words text-sm">{comment.text}</div>
                       </div>
                     </div>
                   ))}

@@ -64,7 +64,7 @@ const SignUpPage = () => {
             <MdOutlineMail />
             <input
               type="email"
-              className="grow"
+              className="grow min-w-0"
               placeholder="Email"
               name="email"
               onChange={handleInputChange}
@@ -78,7 +78,7 @@ const SignUpPage = () => {
               <FaUser />
               <input
                 type="text"
-                className="grow "
+                className="grow min-w-0"
                 placeholder="Username"
                 name="username"
                 onChange={handleInputChange}
@@ -91,12 +91,13 @@ const SignUpPage = () => {
               <MdDriveFileRenameOutline />
               <input
                 type="text"
-                className="grow"
+                className="grow min-w-0"
                 placeholder="Full Name"
                 name="fullName"
                 onChange={handleInputChange}
                 value={formData.fullName}
                 autoComplete="name"
+                maxLength={50}
                 required
               />
             </label>
@@ -105,7 +106,7 @@ const SignUpPage = () => {
             <MdPassword />
             <input
               type="password"
-              className="grow"
+              className="grow min-w-0"
               placeholder="Password"
               name="password"
               onChange={handleInputChange}

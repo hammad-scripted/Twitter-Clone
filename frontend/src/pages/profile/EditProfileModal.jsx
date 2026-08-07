@@ -103,15 +103,16 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
               <input
                 type="text"
                 placeholder="Full Name"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                className="min-w-0 basis-40 flex-1 input border border-gray-700 rounded p-2 input-md"
                 value={formData.fullName}
                 name="fullName"
+                maxLength={50}
                 onChange={handleInputChange}
               />
               <input
                 type="text"
                 placeholder="Username"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                className="min-w-0 basis-40 flex-1 input border border-gray-700 rounded p-2 input-md"
                 value={formData.username}
                 name="username"
                 onChange={handleInputChange}
@@ -121,14 +122,14 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
               <input
                 type="email"
                 placeholder="Email"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                className="min-w-0 basis-40 flex-1 input border border-gray-700 rounded p-2 input-md"
                 value={formData.email}
                 name="email"
                 onChange={handleInputChange}
               />
               <textarea
                 placeholder="Bio"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                className="min-w-0 basis-40 flex-1 input border border-gray-700 rounded p-2 input-md"
                 value={formData.bio}
                 name="bio"
                 onChange={handleInputChange}
@@ -138,7 +139,7 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
               <input
                 type="password"
                 placeholder="Current Password"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                className="min-w-0 basis-40 flex-1 input border border-gray-700 rounded p-2 input-md"
                 value={formData.currentPassword}
                 name="currentPassword"
                 onChange={handleInputChange}
@@ -146,7 +147,7 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
               <input
                 type="password"
                 placeholder="New Password"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                className="min-w-0 basis-40 flex-1 input border border-gray-700 rounded p-2 input-md"
                 value={formData.newPassword}
                 name="newPassword"
                 onChange={handleInputChange}
@@ -155,7 +156,7 @@ const EditProfileModal = ({ user, coverImgFile, profileImgFile, onProfileUpdated
             <input
               type="text"
               placeholder="Link"
-              className="flex-1 input border border-gray-700 rounded p-2 input-md"
+              className="w-full min-w-0 input border border-gray-700 rounded p-2 input-md"
               value={formData.link}
               name="link"
               onChange={handleInputChange}

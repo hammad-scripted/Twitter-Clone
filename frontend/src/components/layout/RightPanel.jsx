@@ -42,7 +42,7 @@ const RightPanel = ({ isLoading = false }) => {
           {!isLoading && !isUsersLoading &&
             users?.map((user) => (
               <div className="flex items-center justify-between gap-4" key={user._id}>
-                <Link to={`/profile/${user.username}`} className="flex gap-2 items-center flex-1">
+                <Link to={`/profile/${user.username}`} className="flex min-w-0 gap-2 items-center flex-1">
                   <div className="avatar">
                     <div className="w-8 h-8 rounded-full overflow-hidden">
                       <img
@@ -54,7 +54,7 @@ const RightPanel = ({ isLoading = false }) => {
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="font-semibold tracking-tight truncate w-28">{user.fullName}</span>
-                    <span className="text-sm text-slate-500">@{user.username}</span>
+                    <span className="truncate text-sm text-slate-500">@{user.username}</span>
                   </div>
                 </Link>
                 <button
