@@ -13,7 +13,7 @@ import { getAuthUser } from './utils/api';
 
 const AppLayout = ({ children }) => {
   return (
-    <div className="flex max-w-6xl mx-auto">
+    <div className="app-shell flex max-w-7xl mx-auto min-h-screen">
       <Sidebar />
       {children}
       <RightPanel />
@@ -85,7 +85,7 @@ function App() {
         />
         <Route path="*" element={<Navigate to={authUser ? '/' : '/login'} replace />} />
       </Routes>
-      <Toaster position="top-right" />
+      <Toaster position="top-right" toastOptions={{ className: 'app-toast', duration: 3500 }} />
     </>
   );
 }

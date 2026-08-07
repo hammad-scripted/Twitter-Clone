@@ -32,7 +32,7 @@ const Post = ({ post }) => {
   const { data: authUser } = useQuery({ queryKey: ['authUser'], queryFn: getAuthUser });
   const imageVersion = useImageVersion();
   const postOwner = post.user;
-  const isLiked = post.likes?.some((id) => id === authUser?._id);
+  const isLiked = post.likes?.some((id) => id?.toString() === authUser?._id?.toString());
   const isMyPost = authUser?._id === postOwner?._id;
   const formattedDate = formatPostDate(post.createdAt);
 
@@ -74,11 +74,11 @@ const Post = ({ post }) => {
 
   const handlePostComment = (e) => {
     e.preventDefault();
-    postComment();
+    if (comment.trim()) postComment();
   };
 
   return (
-    <div className="flex gap-3 items-start p-4 border-b border-gray-700 hover:bg-white/[0.03] transition-colors">
+    <article className="flex gap-3 items-start p-4 border-b border-white/10 hover:bg-white/[0.025] transition-colors">
       <div className="avatar">
         <Link
           to={`/profile/${postOwner.username}`}
@@ -96,7 +96,7 @@ const Post = ({ post }) => {
           <Link to={`/profile/${postOwner.username}`} className="font-bold">
             {postOwner.fullName}
           </Link>
-          <span className="text-gray-700 flex gap-1 text-sm">
+          <span className="min-w-0 text-slate-500 flex gap-1 text-sm">
             <Link to={`/profile/${postOwner.username}`}>
               @{postOwner.username}
             </Link>
@@ -105,10 +105,7 @@ const Post = ({ post }) => {
           </span>
           {isMyPost && (
             <span className="flex justify-end flex-1">
-              <FaTrash
-                className="cursor-pointer hover:text-red-500"
-                onClick={() => deletePost()}
-              />
+              <button type="button" aria-label="Delete post" className="icon-button hover:!bg-red-500/10 hover:!text-red-400" onClick={() => deletePost()}><FaTrash /></button>
             </span>
           )}
         </div>
@@ -132,7 +129,7 @@ const Post = ({ post }) => {
             >
               <FaRegComment className="w-4 h-4 text-slate-500 group-hover:text-sky-400" />
               <span className="text-sm text-slate-500 group-hover:text-sky-400">
-                {post.comments.length}
+                {post.comments?.length || 0}
               </span>
             </div>
 
@@ -143,12 +140,12 @@ const Post = ({ post }) => {
               <div className="modal-box rounded border border-gray-600">
                 <h3 className="font-bold text-lg mb-4">COMMENTS</h3>
                 <div className="flex flex-col gap-3 max-h-60 overflow-auto">
-                  {post.comments.length === 0 && (
+                  {(post.comments?.length || 0) === 0 && (
                     <p className="text-sm text-slate-500">
                       No comments yet. Be the first one.
                     </p>
                   )}
-                  {post.comments.map((comment) => (
+                  {(post.comments || []).map((comment) => (
                     <div key={comment._id} className="flex gap-2 items-start">
                       <div className="avatar">
                         <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -185,7 +182,7 @@ const Post = ({ post }) => {
                   />
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4"
-                    disabled={isCommenting}
+                    disabled={isCommenting || !comment.trim()}
                   >
                     {isCommenting ? (
                       <span className="loading loading-spinner loading-md"></span>
@@ -222,7 +219,7 @@ const Post = ({ post }) => {
                   isLiked ? 'text-pink-500' : 'text-slate-500'
                 }`}
               >
-                {post.likes.length}
+                {post.likes?.length || 0}
               </span>
             </button>
           </div>
@@ -231,7 +228,7 @@ const Post = ({ post }) => {
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

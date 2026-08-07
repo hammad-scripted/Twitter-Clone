@@ -44,15 +44,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto flex h-screen px-10">
-      <div className="flex-1 hidden lg:flex items-center justify-center">
-        <XSvg className="lg:w-2/3 fill-white" />
+    <main className="max-w-6xl mx-auto flex min-h-screen px-5 py-10 sm:px-10">
+      <div className="flex-1 hidden lg:flex flex-col items-center justify-center gap-6">
+        <div className="rounded-[2rem] bg-primary/10 p-16 ring-1 ring-primary/20"><XSvg className="w-56 fill-white" /></div>
+        <p className="max-w-sm text-center text-xl text-slate-400">See what people are talking about, right now.</p>
       </div>
       <div className="flex-1 flex flex-col justify-center items-center">
-        <form className="flex gap-4 flex-col w-full max-w-sm" onSubmit={handleSubmit}>
-          <XSvg className="w-24 lg:hidden fill-white" />
-          <h1 className="text-4xl font-extrabold text-white">{"Let's"} go.</h1>
-          <label className="input input-bordered rounded flex items-center gap-2">
+        <form className="auth-card flex gap-5 flex-col" onSubmit={handleSubmit}>
+          <XSvg className="w-12 fill-white" />
+          <div><p className="text-sm font-semibold text-primary">WELCOME BACK</p><h1 className="mt-1 text-4xl font-extrabold tracking-tight text-white">Sign in to your feed.</h1></div>
+          <label className="auth-input flex items-center gap-3">
             <MdOutlineMail />
             <input
               type="text"
@@ -66,7 +67,7 @@ const LoginPage = () => {
             />
           </label>
 
-          <label className="input input-bordered rounded flex items-center gap-2">
+          <label className="auth-input flex items-center gap-3">
             <MdPassword />
             <input
               type="password"
@@ -80,23 +81,16 @@ const LoginPage = () => {
             />
           </label>
           <button
-            className="btn rounded-full btn-primary text-white"
+            className="btn rounded-full border-0 bg-primary text-white shadow-lg shadow-primary/20 hover:bg-sky-500"
             disabled={isPending}
           >
             {isPending ? 'Loading...' : 'Login'}
           </button>
           {isError && <p className="text-red-500">{error.message}</p>}
+          <p className="text-center text-sm text-slate-400">New here? <Link className="font-semibold text-primary hover:underline" to="/signup">Create an account</Link></p>
         </form>
-        <div className="flex flex-col gap-2 mt-4 w-full max-w-sm">
-          <p className="text-white text-lg">{"Don't"} have an account?</p>
-          <Link to="/signup">
-            <button className="btn rounded-full btn-primary text-white btn-outline w-full">
-              Sign up
-            </button>
-          </Link>
-        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

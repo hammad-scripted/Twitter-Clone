@@ -4,10 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import User from '../models/user.model.js';
 import Notification from '../models/notification.model.js';
 import { verifyPassword } from '../utils/verifyPassword.js';
-import bcrypt from 'bcryptjs';
-import cloudinary from '../utils/cloudinary.js';
 import { deleteImage } from '../utils/cloudinary.js';
-import {uploadImage} from '../utils/cloudinary.js';
+import { uploadImage } from '../utils/cloudinary.js';
 export const getUserProfile = async (req, res, next) => {
   const { username, userName } = req.params;
   const resolvedUsername = username || userName;
@@ -160,7 +158,9 @@ export const updateUserProfile = async (req, res, next) => {
         );
       }
 
-      user.password = await bcrypt.hash(newPassword, 10);
+      // The User pre-save hook hashes modified passwords. Assigning a hash here
+      // would hash it twice and make the new password impossible to use.
+      user.password = newPassword;
     }
 
     // =====================
