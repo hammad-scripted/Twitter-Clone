@@ -7,7 +7,6 @@ services:
     buildCommand: npm ci --prefix backend --omit=dev && npm ci --prefix frontend && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
-    maxShutdownDelaySeconds: 30
     envVars:
       - key: NODE_ENV
         value: production
