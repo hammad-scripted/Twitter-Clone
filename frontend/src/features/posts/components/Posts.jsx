@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import Post from './Post';
-import PostSkeleton from '../skeletons/PostSkeleton';
-import { apiRequest, normalizePosts } from '../../utils/api';
+import PostSkeleton from '../../../components/skeletons/PostSkeleton';
+import { apiRequest, normalizePosts } from '../../../utils/api';
 
 const Posts = ({ feedType = 'forYou', username, userId, onCountChange }) => {
   const getPostsEndpoint = () => {

@@ -22,6 +22,12 @@ A full-stack Twitter/X clone built with the MERN stack.
 
 ## Setup
 
+Install both applications from the repository root:
+
+```bash
+npm run install:all
+```
+
 ### 1. Backend
 
 ```bash
@@ -54,6 +60,44 @@ The Vite dev server proxies `/api` requests to the backend on port 8000
 (see `frontend/vite.config.js`), so no extra CORS config is needed in development.
 
 ## Available scripts
+
+Run these from the repository root:
+
+- `npm run dev:backend` — start the API with nodemon
+- `npm run dev:frontend` — start the Vite development server
+- `npm run build` — create the frontend production build
+- `npm run lint` — lint the frontend
+- `npm run check` — validate the backend and lint/build the frontend
+
+## Project structure
+
+```text
+twitter-clone/
+├── backend/
+│   └── src/
+│       ├── controllers/   # Request handlers
+│       ├── db/            # Database connection
+│       ├── errors/        # HTTP error middleware
+│       ├── middlewares/   # Authentication and validation
+│       ├── models/        # Mongoose models
+│       ├── routes/        # API route definitions
+│       ├── utils/         # Shared backend helpers
+│       ├── app.js         # Express app composition
+│       └── server.js      # Database and HTTP server startup
+└── frontend/
+    └── src/
+        ├── app/           # Application-wide configuration
+        ├── components/    # Shared layout, UI, and skeletons
+        ├── features/      # Feature-owned components
+        ├── hooks/         # Shared React hooks
+        ├── layouts/       # Page shells
+        ├── pages/         # Route-level components
+        └── utils/         # API and data helpers
+```
+
+Package-specific scripts are also available inside `backend/` and `frontend/`.
+
+<!-- Legacy per-package command reference -->
 
 **Backend**
 - `npm run dev` — start with nodemon

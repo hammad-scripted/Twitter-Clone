@@ -4,22 +4,11 @@ import LoginPage from './pages/auth/login/LoginPage';
 import SignUpPage from './pages/auth/signup/SignUpPage';
 import NotificationPage from './pages/notification/NotificationPage';
 import ProfilePage from './pages/profile/ProfilePage';
-import Sidebar from './components/common/Sidebar';
-import RightPanel from './components/common/RightPanel';
-import LoadingSpinner from './components/common/LoadingSpinner';
+import LoadingSpinner from './components/ui/LoadingSpinner';
+import AppLayout from './layouts/AppLayout';
 import { Toaster } from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
 import { getAuthUser } from './utils/api';
-
-const AppLayout = ({ children }) => {
-  return (
-    <div className="app-shell flex max-w-7xl mx-auto min-h-screen">
-      <Sidebar />
-      {children}
-      <RightPanel />
-    </div>
-  );
-};
 
 function App() {
   const { data: authUser, isLoading } = useQuery({

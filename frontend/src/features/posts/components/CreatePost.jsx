@@ -5,8 +5,8 @@ import { CiImageOn } from 'react-icons/ci';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 import { IoCloseSharp } from 'react-icons/io5';
 
-import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
-import { useImageVersion } from '../../hooks/useImageVersion';
+import { apiRequest, getAuthUser, getImageUrl } from '../../../utils/api';
+import { useImageVersion } from '../../../hooks/useImageVersion';
 
 const CreatePost = () => {
   const [text, setText] = useState('');

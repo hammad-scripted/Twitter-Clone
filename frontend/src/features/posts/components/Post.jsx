@@ -6,8 +6,8 @@ import { FaRegComment, FaRegHeart, FaHeart, FaTrash } from 'react-icons/fa';
 import { BiRepost } from 'react-icons/bi';
 import { FaRegBookmark } from 'react-icons/fa6';
 
-import { apiRequest, getAuthUser, getImageUrl } from '../../utils/api';
-import { useImageVersion } from '../../hooks/useImageVersion';
+import { apiRequest, getAuthUser, getImageUrl } from '../../../utils/api';
+import { useImageVersion } from '../../../hooks/useImageVersion';
 
 const formatPostDate = (date) => {
   if (!date) return '';
