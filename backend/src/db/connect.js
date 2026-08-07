@@ -1,16 +1,12 @@
-import { connect } from 'mongoose';
-import { config } from 'dotenv';
-config();
+import mongoose from 'mongoose';
 
-import chalk from 'chalk';
+import { env } from '../config/env.js';
+
 export const connectDB = async () => {
-  const MONGO_URI = process.env.MONGO_URI;
-  try {
-    const conn = await connect(MONGO_URI);
-    console.log(chalk.blue('MongoDB Connected successfully... '));
-    console.log(chalk.magenta(`MongoDB Connected: ${conn.connection.host}`));
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
-  }
+  const connection = await mongoose.connect(env.mongoUri, {
+    serverSelectionTimeoutMS: 10_000,
+  });
+
+  console.log(`MongoDB connected: ${connection.connection.host}`);
+  return connection;
 };

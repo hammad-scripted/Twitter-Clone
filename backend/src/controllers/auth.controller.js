@@ -4,6 +4,7 @@ import User from '../models/user.model.js';
 import ApiResponse from '../utils/apiResponse.js';
 import { generateTokenAndSetCookie } from '../utils/token.js';
 import { verifyPassword } from '../utils/verifyPassword.js';
+import { env } from '../config/env.js';
 export const login = async (req, res, next) => {
   const { username, userName, password } = req.body;
   const resolvedUsername = username || userName;
@@ -35,7 +36,7 @@ export const logout = async (req, res, next) => {
   res.clearCookie('jwt', {
     httpOnly: true,
     sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    secure: env.isProduction,
   });
   return res
     .status(StatusCodes.OK)

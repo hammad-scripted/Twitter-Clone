@@ -1,14 +1,35 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
-const errorHandler = (err, req, res, next) => {
-  const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+import { env } from '../config/env.js';
+
+const errorHandler = (err, _req, res, _next) => {
+  let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+  let message = err.message || ReasonPhrases.INTERNAL_SERVER_ERROR;
+  let errors = err.errors || [];
+
+  if (err.name === 'ValidationError') {
+    statusCode = StatusCodes.BAD_REQUEST;
+    message = 'Validation failed';
+    errors = Object.values(err.errors).map((error) => error.message);
+  } else if (err.name === 'CastError') {
+    statusCode = StatusCodes.BAD_REQUEST;
+    message = 'Invalid resource identifier';
+  } else if (err.code === 11000) {
+    statusCode = StatusCodes.CONFLICT;
+    message = 'A user with those details already exists';
+  }
+
+  if (statusCode >= 500) {
+    console.error(err);
+    if (env.isProduction) message = ReasonPhrases.INTERNAL_SERVER_ERROR;
+  }
 
   return res.status(statusCode).json({
     success: false,
-    message: err.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
-    errors: err.errors || [],
+    message,
+    errors,
     data: err.data || null,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+    ...(!env.isProduction && { stack: err.stack }),
   });
 };
 

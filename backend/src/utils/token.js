@@ -2,9 +2,10 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 import ApiError from '../utils/apiError.js';
 import { StatusCodes } from 'http-status-codes';
+import { env } from '../config/env.js';
 
 export const generateTokenAndSetCookie = (userId, res) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ userId }, env.jwtSecret, {
     expiresIn: '2d',
   });
 
@@ -12,7 +13,7 @@ export const generateTokenAndSetCookie = (userId, res) => {
     maxAge: 2 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    secure: env.isProduction,
   });
 
   return token;
@@ -26,7 +27,7 @@ export const verifyToken = async (req, res, next) => {
       return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Please login first'));
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, env.jwtSecret);
 
     if (!decoded?.userId) {
       return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token'));
